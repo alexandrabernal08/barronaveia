@@ -1,4 +1,4 @@
-# Braço de centralizar e abrir para o torno Atman Bilha Hercules
+# Braço de centralizar e abrir para o torno Atman Bilha Hercules Pro
 
 Projeto para fazer em casa (ou com marceneiro e serralheiro) um braço de alavanca parecido com o *Strong Arm Centering Tool*, adaptado ao torno Atman. O guia é **para uso próprio no ateliê**. O nome e a marca *Strong Arm* são do fabricante, então não use esse nome se um dia for vender.
 
@@ -24,23 +24,20 @@ A vantagem está na **alavanca**. Com a mão a ~75 cm da articulação e a haste
 
 ## 2. Antes de tudo: medir o seu torno Atman
 
-### O que já se sabe do Hercules (Atman Bilha)
+### Modelo escolhido: Hercules Pro (Atman Bilha)
 
 Pelo que a loja divulga (dados obtidos por busca, sem abrir a página):
 
-| | Hercules Pro | Hercules Life |
-|---|---|---|
-| Disco (cabeça) | **Ø 300 mm** | **Ø 350 mm**, alumínio fundido |
-| Motor | 1 HP, até 60 kg de barro, 0–250 rpm, botão *Half Speed* | igual |
-| Altura | — | **regulável em 8 níveis** |
-| Bacia | **magnética, removível** | **magnética, bipartida**, de poliestireno |
+- **Disco (cabeça):** Ø 300 mm
+- **Motor:** 1 HP, até 60 kg de barro, 0–250 rpm, botão *Half Speed*
+- **Bacia:** magnética e removível
 
 O que isso muda no projeto:
 
+- **Disco de 300 mm:** é o mesmo dos desenhos, então as medidas de exemplo (A = 420, rasgo de 300 a 550 mm do poste, chapa a 480–610 mm) já servem como ponto de partida. Só ajuste A depois de medir o diâmetro externo da bacia: o poste fica logo fora dela.
 - **Não prenda nada na bacia.** Ela é removível e de plástico, então o poste tem que ir no **corpo ou chassi do torno**, ou no chão.
-- **Se a altura do seu torno for regulável**, prefira prender o poste **no corpo do torno**, na parte que sobe e desce junto com o disco. Assim, ao mudar o nível, o braço acompanha e não é preciso reajustar nada. Com a coluna de chão, você teria que reajustar os dois colares trava a cada mudança de nível.
-- **Disco:** no Pro, de Ø 300 mm, os desenhos já servem (usam 300). No Life, de Ø 350 mm, afaste o poste ~25 mm a mais (A ≈ 445) e mantenha o rasgo de A − 120 até A + 130.
-- O "Centralizador Universal" que a Atman vende é outro tipo de acessório. Ele segura a peça no disco, não é um braço de alavanca. Então este projeto não repete nada que já exista na loja.
+- **Altura do torno:** a loja não informa se a altura do Pro é regulável. Se for, prenda o poste **no corpo do torno**, na parte que sobe e desce junto com o disco, para o braço acompanhar sem reajuste.
+- O "Centralizador Universal" que a Atman vende é outro tipo de acessório: ele segura a peça no disco, não é um braço de alavanca.
 
 ### Medidas que faltam
 
