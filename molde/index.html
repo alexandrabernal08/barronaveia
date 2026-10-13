@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Envie a foto da sua peça e receba o .STL do molde de cerâmica pronto para imprimir.">
+</head>
+<body>
+<title>Molde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: plaster-white workshop sheet, technical-drawing details in cobalt; one column on phone, two-column hero and tools on desktop */
+:root {
+  --bg: #ECEFEC;        /* gesso seco */
+  --surface: #F8F9F7;
+  --sunk: #E2E6E3;
+  --ink: #141A2C;
+  --muted: #586074;
+  --line: #C9CFD2;
+  --cobalt: #2342B6;    /* azul cobalto de esmalte */
+  --cobalt-ink: #FFFFFF;
+  --cobalt-soft: #DCE3F6;
+  --ok: #24764A;
+  --warn: #9A6200;
+  --bad: #B3261E;
+  --ok-soft: #DCEFE3;
+  --warn-soft: #F6EBD3;
+  --bad-soft: #F7DEDB;
+  --f-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E1220; --surface: #161B2B; --sunk: #1C2336; --ink: #E7EAF2; --muted: #9AA1B5; --line: #2A3249;
+  --cobalt: #8199FF; --cobalt-ink: #0E1220; --cobalt-soft: #1E2950;
+  --ok: #63C890; --warn: #E6AE45; --bad: #F2847A; --ok-soft: #15301F; --warn-soft: #332611; --bad-soft: #3A1916;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0E1220; --surface: #161B2B; --sunk: #1C2336; --ink: #E7EAF2; --muted: #9AA1B5; --line: #2A3249;
+  --cobalt: #8199FF; --cobalt-ink: #0E1220; --cobalt-soft: #1E2950;
+  --ok: #63C890; --warn: #E6AE45; --bad: #F2847A; --ok-soft: #15301F; --warn-soft: #332611; --bad-soft: #3A1916;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+h1, h2, h3 { font-family: var(--f-display); font-stretch: 112%; line-height: 1.05; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.2rem, 6.4vw, 4.2rem); font-weight: 820; }
+h2 { font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: 780; }
+h3 { font-size: 1.15rem; font-weight: 720; }
+p { margin: 0; }
+.eyebrow { font-family: var(--f-mono); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--cobalt); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+a { color: var(--cobalt); }
+:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+
+/* header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 12px; padding-block: 10px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); margin-right: auto; }
+.brand b { font-family: var(--f-display); font-stretch: 125%; font-weight: 850; font-size: 1.35rem; letter-spacing: -.02em; }
+.brand svg { width: 30px; height: 30px; }
+.top select, .seg button { font: 500 .85rem var(--f-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; cursor: pointer; padding: 7px 11px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.linkbtn { font: 600 .85rem var(--f-body); color: var(--ink); background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 6px 2px; }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 700 .95rem var(--f-display); font-stretch: 110%; letter-spacing: .02em; text-transform: uppercase; border-radius: 999px; padding: 14px 24px; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; text-decoration: none; transition: transform .12s ease, background .12s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn.primary { background: var(--cobalt); border-color: var(--cobalt); color: var(--cobalt-ink); }
+.btn.small { padding: 9px 16px; font-size: .82rem; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; }
+
+/* hero */
+.hero { padding-block: 48px 40px; display: grid; gap: 36px; grid-template-columns: 1.1fr .9fr; align-items: center; }
+.hero > * { min-width: 0; }
+.hero h1 em { font-style: normal; color: var(--cobalt); }
+.hero .lead { font-size: 1.12rem; color: var(--muted); max-width: 34em; margin-top: 18px; }
+.hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+.specs { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 22px; font-family: var(--f-mono); font-size: .78rem; color: var(--muted); letter-spacing: .04em; }
+.specs span::before { content: "— "; color: var(--cobalt); }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; position: relative; }
+.sheet svg { width: 100%; height: auto; display: block; color: var(--ink); }
+.sheet .stamp { position: absolute; right: 12px; bottom: 10px; font-family: var(--f-mono); font-size: .66rem; color: var(--muted); text-align: right; line-height: 1.35; border: 1px solid var(--line); padding: 4px 8px; background: var(--surface); }
+.dim { stroke: var(--cobalt); fill: none; stroke-width: 1; }
+.dimtxt { fill: var(--cobalt); font: 500 11px var(--f-mono); }
+.outl { stroke: currentColor; fill: none; stroke-width: 2; stroke-linejoin: round; }
+.hatch { stroke: var(--muted); stroke-width: .7; }
+.part { stroke: var(--cobalt); stroke-dasharray: 6 4; stroke-width: 1.2; fill: none; }
+.lbl { fill: var(--muted); font: 500 10px var(--f-mono); letter-spacing: .06em; }
+
+section { padding-block: 56px; }
+section.alt { background: var(--surface); border-block: 1px solid var(--line); }
+.sec-head { display: grid; gap: 10px; margin-bottom: 28px; max-width: 46em; }
+
+/* steps */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; counter-reset: s; border-top: 2px solid var(--ink); }
+.steps li { list-style: none; padding: 18px 18px 6px 0; border-right: 1px solid var(--line); margin-right: 18px; }
+.steps li:last-child { border-right: 0; margin-right: 0; }
+.steps { padding: 0; margin: 0; }
+.steps .n { font-family: var(--f-mono); color: var(--cobalt); font-size: .85rem; }
+.steps h3 { margin: 8px 0 6px; }
+.steps p { color: var(--muted); font-size: .95rem; }
+
+/* wizard */
+.wiz { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.wiz-nav { display: flex; overflow-x: auto; border-bottom: 1px solid var(--line); background: var(--sunk); }
+.wiz-nav button { flex: 1 0 auto; font: 600 .8rem var(--f-body); color: var(--muted); background: none; border: 0; padding: 14px 16px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+.wiz-nav button .mono { margin-right: 6px; }
+.wiz-nav button[aria-current="step"] { color: var(--ink); border-bottom-color: var(--cobalt); }
+.wiz-nav button.done { color: var(--ink); }
+.wiz-nav button:disabled { cursor: default; opacity: .6; }
+.panel { padding: 26px; display: grid; gap: 22px; }
+.panel[hidden] { display: none; }
+.panel-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 18px; }
+
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.slot { position: relative; aspect-ratio: 4 / 5; max-width: 100%; border: 1.5px dashed var(--line); border-radius: var(--r); background: var(--bg); display: grid; place-items: center; text-align: center; cursor: pointer; overflow: hidden; padding: 10px; }
+.slot:hover, .slot.drag { border-color: var(--cobalt); }
+.slot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.slot .cap { font-size: .85rem; color: var(--muted); display: grid; gap: 6px; justify-items: center; }
+.slot .cap b { color: var(--ink); font-weight: 600; }
+.slot .tag { position: absolute; left: 8px; top: 8px; z-index: 2; font: 500 .68rem var(--f-mono); background: var(--surface); color: var(--ink); padding: 3px 7px; border-radius: 4px; border: 1px solid var(--line); }
+.slot .rm { position: absolute; right: 8px; top: 8px; z-index: 3; background: var(--surface); border: 1px solid var(--line); color: var(--ink); border-radius: 999px; width: 28px; height: 28px; cursor: pointer; font-size: 16px; line-height: 1; }
+.tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: .88rem; color: var(--muted); }
+.tips div { border-left: 2px solid var(--cobalt); padding-left: 10px; }
+.photoq { display: grid; gap: 6px; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid2 > *, .grid3 > * { min-width: 0; }
+label.f { display: grid; gap: 6px; font-size: .88rem; font-weight: 600; }
+label.f small { font-weight: 400; color: var(--muted); }
+input[type=text], input[type=email], input[type=tel], input[type=number], select.in, textarea { font: 400 1rem var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; width: 100%; }
+textarea { min-height: 84px; resize: vertical; }
+.unit { position: relative; }
+.unit input { padding-right: 44px; }
+.unit span { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font: 500 .8rem var(--f-mono); color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; }
+.chip span { display: inline-flex; align-items: center; gap: 6px; font-size: .92rem; padding: 9px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); cursor: pointer; }
+.chip input:checked + span { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip input:focus-visible + span { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+.calc-note { font-family: var(--f-mono); font-size: .82rem; background: var(--cobalt-soft); color: var(--ink); border-radius: 8px; padding: 12px 14px; line-height: 1.6; }
+
+/* verdict */
+.verdict { border-radius: 12px; padding: 18px 20px; display: grid; gap: 6px; }
+.verdict.ok { background: var(--ok-soft); }
+.verdict.warn { background: var(--warn-soft); }
+.verdict.review { background: var(--bad-soft); }
+.verdict.has-img { grid-template-columns: 96px 1fr; align-items: center; column-gap: 16px; }
+.verdict.has-img img { width: 96px; height: 120px; object-fit: cover; border-radius: 8px; grid-row: span 3; }
+.verdict .st { font: 700 .78rem var(--f-mono); letter-spacing: .1em; text-transform: uppercase; }
+.verdict.ok .st { color: var(--ok); } .verdict.warn .st { color: var(--warn); } .verdict.review .st { color: var(--bad); }
+.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.checks li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: .95rem; }
+.checks li > div { min-width: 0; }
+.dot { width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; font: 700 .75rem var(--f-mono); }
+.dot.ok { background: var(--ok); color: var(--surface); } .dot.warn { background: var(--warn); color: var(--surface); } .dot.bad { background: var(--bad); color: var(--surface); }
+.checks small { display: block; color: var(--muted); font-size: .85rem; }
+.figs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.fig { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--bg); }
+.fig .k { font: 500 .7rem var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.fig .v { font: 700 1.3rem var(--f-display); font-stretch: 105%; font-variant-numeric: tabular-nums; margin-top: 4px; }
+
+/* plans */
+.plans { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.plan { border: 1.5px solid var(--line); border-radius: 14px; padding: 24px; display: grid; gap: 12px; align-content: start; background: var(--surface); position: relative; }
+.plan.feat { border-color: var(--cobalt); }
+.plan .badge { position: absolute; top: -12px; left: 20px; background: var(--cobalt); color: var(--cobalt-ink); font: 600 .7rem var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+.plan .price { font: 820 2.6rem var(--f-display); font-stretch: 105%; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.plan .price small { font-size: 1rem; font-weight: 600; color: var(--muted); margin-right: 4px; }
+.plan ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: .95rem; }
+.plan li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; }
+.plan li::before { content: "✓"; color: var(--cobalt); font-weight: 700; }
+.plan .alt-pay { font-size: .85rem; color: var(--ok); font-weight: 600; }
+.plan.pick { cursor: pointer; }
+.plan.pick.sel { outline: 3px solid var(--cobalt); outline-offset: 2px; }
+.paylist { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.paylist span { font: 500 .8rem var(--f-mono); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; color: var(--muted); }
+
+/* summary / confirm */
+.summary { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.summary div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .93rem; }
+.summary div:last-child { border-bottom: 0; font-weight: 700; background: var(--sunk); }
+.summary div span:last-child { text-align: right; }
+.confirm { display: grid; gap: 16px; }
+.confirm .code { font: 700 2rem var(--f-mono); color: var(--cobalt); letter-spacing: .04em; }
+pre.msg { white-space: pre-wrap; font: 400 .85rem var(--f-mono); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin: 0; max-height: 240px; overflow: auto; }
+.err { color: var(--bad); font-size: .9rem; font-weight: 600; }
+
+/* tools */
+.tools { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.tool { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: grid; gap: 16px; align-content: start; }
+.tool .out { font: 700 1.6rem var(--f-display); font-variant-numeric: tabular-nums; }
+
+/* times */
+.times { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--ink); }
+.times div { padding: 16px 16px 0 0; }
+.times .k { font: 500 .78rem var(--f-mono); color: var(--cobalt); letter-spacing: .1em; text-transform: uppercase; }
+.times .v { font: 780 1.6rem var(--f-display); font-stretch: 110%; margin: 6px 0; }
+
+/* orders */
+.orders { display: grid; gap: 14px; }
+.order { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 12px; }
+.order header { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.order .ex { font: 500 .7rem var(--f-mono); background: var(--warn-soft); color: var(--warn); padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+.track { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.track div { font-size: .74rem; color: var(--muted); border-top: 4px solid var(--line); padding-top: 6px; }
+.track div.on { border-top-color: var(--cobalt); color: var(--ink); font-weight: 600; }
+
+/* faq */
+details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+details summary { cursor: pointer; font-weight: 600; font-size: 1.02rem; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+details summary::after { content: "+"; font: 500 1.2rem var(--f-mono); color: var(--cobalt); }
+details[open] summary::after { content: "–"; }
+details p { margin-top: 10px; color: var(--muted); max-width: 62ch; }
+
+footer.foot { padding-block: 34px 110px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
+footer.foot .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: space-between; }
+
+.sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: color-mix(in srgb, var(--bg) 92%, transparent); border-top: 1px solid var(--line); backdrop-filter: blur(8px); display: none; }
+.sticky-cta .btn { width: 100%; }
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: .9rem; z-index: 40; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding-block: 30px 28px; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .steps li:nth-child(2) { border-right: 0; margin-right: 0; }
+  .tips, .figs { grid-template-columns: 1fr 1fr; }
+  .tools, .plans { grid-template-columns: 1fr; }
+  .sticky-cta.show { display: block; }
+}
+@media (max-width: 560px) {
+  .wrap { padding-inline: 16px; }
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .slots { grid-template-columns: 1fr 1fr; }
+  .slots .slot:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
+  .steps { grid-template-columns: 1fr; }
+  .steps li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--line); }
+  .times { grid-template-columns: 1fr; }
+  .panel { padding: 18px; }
+  .track div { font-size: .64rem; }
+  .top .wrap { gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio" aria-label="Molde">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="12" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="18" y="4" width="12" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 10 h-4 v12 h4 M18 10 h4 v12 h-4" fill="none" stroke="var(--cobalt)" stroke-width="2"/></svg>
+      <b>molde</b>
+    </a>
+    <select id="country" aria-label="País"></select>
+    <div class="seg" role="group" aria-label="Idioma">
+      <button type="button" id="lang-pt" aria-pressed="true">PT</button>
+      <button type="button" id="lang-es" aria-pressed="false">ES</button>
+    </div>
+    <button type="button" class="linkbtn" id="go-orders" data-t="nav_orders">Meus pedidos</button>
+  </div>
+</header>
+
+<main id="inicio">
+  <div class="wrap hero">
+    <div>
+      <p class="eyebrow" data-t="hero_eyebrow">Da foto ao gesso</p>
+      <h1 style="margin-top:14px" data-t="hero_h1" data-html>Sua peça vira molde. <em>Você só manda a foto.</em></h1>
+      <p class="lead" data-t="hero_lead">Envie a foto da peça que você quer produzir. Verificamos se a peça é moldável, modelamos em 3D com a contração da sua argila e entregamos o arquivo .STL pronto para imprimir a matriz do seu molde de gesso.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#pedido" data-t="cta_upload">Enviar minha foto</a>
+        <a class="btn" href="#precos" data-t="cta_prices">Ver preços</a>
+      </div>
+      <div class="specs"><span data-t="spec1">Arquivo .STL</span><span data-t="spec2">Pronto para imprimir</span><span data-t="spec3">Contração calculada</span><span data-t="spec4">Feito por ceramistas</span></div>
+    </div>
+    <figure class="sheet" style="margin:0">
+      <svg viewBox="0 0 420 330" role="img" aria-label="Desenho técnico de uma caneca em corte, com cotas e linha de partição do molde">
+        <defs><pattern id="hatchpat" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" class="hatch"/></pattern></defs>
+        <!-- molde (caixa) -->
+        <rect x="60" y="40" width="250" height="250" fill="url(#hatchpat)" stroke="currentColor" stroke-width="1" opacity=".55"/>
+        <!-- cavidade da caneca -->
+        <path d="M110 80 L118 262 Q120 270 130 270 L240 270 Q250 270 252 262 L260 80 Z" fill="var(--surface)" class="outl"/>
+        <path d="M260 120 Q300 122 300 170 Q300 218 256 222" class="outl"/>
+        <path d="M257 140 Q282 142 282 170 Q282 200 255 202" class="outl"/>
+        <!-- funil de colagem -->
+        <path d="M110 80 L100 40 L270 40 L260 80" fill="var(--surface)" class="outl"/>
+        <!-- linha de partição -->
+        <line x1="185" y1="30" x2="185" y2="300" class="part"/>
+        <!-- chaves -->
+        <circle cx="185" cy="58" r="6" fill="var(--surface)" stroke="var(--cobalt)" stroke-width="1.5"/>
+        <circle cx="185" cy="282" r="6" fill="var(--surface)" stroke="var(--cobalt)" stroke-width="1.5"/>
+        <!-- cotas -->
+        <line x1="110" y1="306" x2="260" y2="306" class="dim"/><line x1="110" y1="298" x2="110" y2="314" class="dim"/><line x1="260" y1="298" x2="260" y2="314" class="dim"/>
+        <text x="185" y="324" text-anchor="middle" class="dimtxt">Ø 93,2 mm (82 + 12%)</text>
+        <line x1="335" y1="80" x2="335" y2="270" class="dim"/><line x1="327" y1="80" x2="343" y2="80" class="dim"/><line x1="327" y1="270" x2="343" y2="270" class="dim"/>
+        <text x="350" y="178" class="dimtxt" transform="rotate(90 350 178)" text-anchor="middle">H 108,0 mm</text>
+        <text x="20" y="24" class="lbl" data-t="svg_funnel">FUNIL DE COLAGEM</text>
+        <line x1="96" y1="28" x2="150" y2="52" class="dim"/>
+        <text x="196" y="24" class="lbl" data-t="svg_part">LINHA DE PARTIÇÃO</text>
+      </svg>
+      <figcaption class="stamp"><span data-t="svg_stamp">CANECA 300 ml · ARGILA −12%</span><br>MOLDE BIPARTIDO · ESC 1:2</figcaption>
+    </figure>
+  </div>
+
+  <section class="alt" id="como">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-t="how_eyebrow">Como funciona</p>
+        <h2 data-t="how_h2">Quatro etapas, do celular à impressora.</h2>
+      </div>
+      <ol class="steps">
+        <li><span class="n">01</span><h3 data-t="s1_t">Você envia a foto</h3><p data-t="s1_d">Da peça de referência, de frente e com fundo liso. Lateral e topo ajudam.</p></li>
+        <li><span class="n">02</span><h3 data-t="s2_t">Checamos a viabilidade</h3><p data-t="s2_d">Contrassaídas, alças, tamanho e número de partes do molde. Resultado na hora.</p></li>
+        <li><span class="n">03</span><h3 data-t="s3_t">Modelamos em 3D</h3><p data-t="s3_d">Já ampliada pela contração da sua argila e com funil de colagem.</p></li>
+        <li><span class="n">04</span><h3 data-t="s4_t">Entregamos o .STL</h3><p data-t="s4_d">Pronto para imprimir e vazar o gesso. Revisão incluída.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="pedido">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-t="ord_eyebrow">Novo pedido</p>
+        <h2 data-t="ord_h2">Envie sua peça e veja na hora se ela vira molde.</h2>
+      </div>
+      <form class="wiz" id="wiz" novalidate>
+        <nav class="wiz-nav" aria-label="Etapas">
+          <button type="button" data-go="0"><span class="mono">1</span><span data-t="w1">Foto</span></button>
+          <button type="button" data-go="1"><span class="mono">2</span><span data-t="w2">Peça</span></button>
+          <button type="button" data-go="2"><span class="mono">3</span><span data-t="w3">Viabilidade</span></button>
+          <button type="button" data-go="3"><span class="mono">4</span><span data-t="w4">Plano</span></button>
+          <button type="button" data-go="4"><span class="mono">5</span><span data-t="w5">Envio</span></button>
+        </nav>
+
+        <!-- 1 foto -->
+        <div class="panel" data-step="0">
+          <div class="slots" id="slots"></div>
+          <div class="photoq" id="photoq" aria-live="polite"></div>
+          <div class="tips">
+            <div data-t="tip1">Fundo liso e contrastante com a peça.</div>
+            <div data-t="tip2">Câmera na altura do meio da peça, sem inclinar.</div>
+            <div data-t="tip3">Luz difusa, sem sombra forte.</div>
+            <div data-t="tip4">Uma régua ou moeda ao lado ajuda na escala.</div>
+          </div>
+          <div class="panel-foot"><span></span><button type="button" class="btn primary" data-next data-t="next">Continuar</button></div>
+        </div>
+
+        <!-- 2 peça -->
+        <div class="panel" data-step="1" hidden>
+          <div>
+            <p style="font-weight:600;margin-bottom:10px" data-t="type_q">Que tipo de peça é?</p>
+            <div class="chips" id="types"></div>
+          </div>
+          <div class="grid3">
+            <label class="f"><span data-t="f_h">Altura final</span><div class="unit"><input type="number" id="h" min="1" step="0.1" placeholder="ex.: 16" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="f_d">Diâmetro máximo</span><div class="unit"><input type="number" id="d" min="1" step="0.1" placeholder="ex.: 10" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="f_m">Diâmetro da boca</span><div class="unit"><input type="number" id="m" min="0.5" step="0.1" data-tp="f_m_p" placeholder="se tiver" inputmode="decimal"><span>cm</span></div></label>
+          </div>
+          <div class="grid3">
+            <label class="f"><span data-t="f_c">Contração da sua argila</span><div class="unit"><input type="number" id="c" min="0" max="25" step="0.5" value="12" inputmode="decimal"><span>%</span></div><small data-t="f_c_s">Grês costuma ficar entre 10 e 13%.</small></label>
+            <label class="f"><span data-t="f_bed">Mesa da sua impressora</span><select class="in" id="bed"><option value="220">220 × 220 mm</option><option value="256" selected>256 × 256 mm</option><option value="300">300 × 300 mm</option><option value="350">350 × 350 mm</option><option value="0" data-t="bed_none">Não tenho impressora</option></select></label>
+            <label class="f"><span data-t="f_handle">Tem alça ou asa?</span><select class="in" id="handle"><option value="0" data-t="no">Não</option><option value="1" data-t="yes">Sim</option></select></label>
+          </div>
+          <div class="calc-note" id="scaleNote" aria-live="polite"></div>
+          <p class="err" id="pieceErr" aria-live="assertive"></p>
+          <label class="f"><span data-t="f_notes">Observações</span><textarea id="notes" data-tp="f_notes_p" placeholder="Ex.: quero a borda um pouco mais grossa, tirar o relevo da marca…"></textarea></label>
+          <div class="panel-foot"><button type="button" class="btn" data-prev data-t="back">Voltar</button><button type="button" class="btn primary" data-next data-t="check">Verificar viabilidade</button></div>
+        </div>
+
+        <!-- 3 viabilidade -->
+        <div class="panel" data-step="2" hidden>
+          <div id="verdict"></div>
+          <div class="figs" id="figs"></div>
+          <ul class="checks" id="checks"></ul>
+          <p class="muted" style="font-size:.85rem" data-t="via_disc">Pré-análise automática. Um modelador revisa cada pedido antes da cobrança; se a peça não for viável, você não paga.</p>
+          <div class="panel-foot"><button type="button" class="btn" data-prev data-t="back">Voltar</button><button type="button" class="btn primary" data-next data-t="choose_plan">Escolher plano</button></div>
+        </div>
+
+        <!-- 4 plano -->
+        <div class="panel" data-step="3" hidden>
+          <p class="calc-note" id="sculptNote" hidden></p>
+          <div class="plans" id="wizPlans"></div>
+          <div class="panel-foot"><button type="button" class="btn" data-prev data-t="back">Voltar</button><button type="button" class="btn primary" data-next data-t="next">Continuar</button></div>
+        </div>
+
+        <!-- 5 envio -->
+        <div class="panel" data-step="4" hidden>
+          <div id="sendForm" style="display:grid;gap:20px">
+            <div class="grid2">
+              <label class="f"><span data-t="f_name">Nome</span><input type="text" id="name" autocomplete="name"></label>
+              <label class="f"><span>WhatsApp</span><input type="tel" id="wa" autocomplete="tel" placeholder="+55 11 91234-5678"></label>
+            </div>
+            <div class="grid2">
+              <label class="f"><span>E-mail</span><input type="email" id="email" autocomplete="email" placeholder="voce@email.com"></label>
+              <label class="f"><span data-t="f_studio">Ateliê ou marca <small data-t="optional">(opcional)</small></span><input type="text" id="studio"></label>
+            </div>
+            <div>
+              <p style="font-weight:600;margin-bottom:10px" data-t="pay_q">Como prefere pagar?</p>
+              <div class="chips" id="pays"></div>
+            </div>
+            <div class="summary" id="summary"></div>
+            <label style="display:flex;gap:10px;align-items:flex-start;font-size:.9rem;cursor:pointer"><input type="checkbox" id="terms" style="width:18px;height:18px;margin-top:2px;flex:none"><span data-t="terms">Li e aceito os termos. Minhas fotos são usadas só para modelar esta peça (LGPD).</span></label>
+            <p class="err" id="sendErr" aria-live="assertive"></p>
+            <div class="panel-foot"><button type="button" class="btn" data-prev data-t="back">Voltar</button><button type="submit" class="btn primary" data-t="send">Enviar pedido</button></div>
+          </div>
+          <div id="confirm" class="confirm" hidden></div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="alt" id="precos">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-t="pr_eyebrow">Preços</p>
+        <h2 data-t="pr_h2">Pague só se a peça for viável.</h2>
+        <p class="muted" id="priceNote"></p>
+      </div>
+      <div class="plans" id="plans"></div>
+      <div class="paylist" id="paylist"></div>
+    </div>
+  </section>
+
+  <section id="ferramentas">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-t="tl_eyebrow">Calculadoras grátis</p>
+        <h2 data-t="tl_h2">Contas de ateliê, sem planilha.</h2>
+      </div>
+      <div class="tools">
+        <div class="tool">
+          <h3 data-t="tc_t">Contração da argila</h3>
+          <p class="muted" data-t="tc_d">Quanto maior o modelo precisa ser para a peça sair do forno no tamanho certo.</p>
+          <div class="grid2">
+            <label class="f"><span data-t="tc_final">Medida final</span><div class="unit"><input type="number" id="t-final" value="10" step="0.1" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="f_c">Contração da sua argila</span><div class="unit"><input type="number" id="t-c" value="12" step="0.5" inputmode="decimal"><span>%</span></div></label>
+          </div>
+          <div><span class="muted" data-t="tc_out">Medida do modelo</span><div class="out" id="t-out"></div></div>
+        </div>
+        <div class="tool">
+          <h3 data-t="tg_t">Gesso para o molde</h3>
+          <p class="muted" data-t="tg_d">Proporção 100 : 70 (gesso : água), consistência usual para colagem.</p>
+          <div class="grid3">
+            <label class="f"><span data-t="tg_w">Largura</span><div class="unit"><input type="number" id="g-w" value="16" step="0.5" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="tg_l">Compr.</span><div class="unit"><input type="number" id="g-l" value="16" step="0.5" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="tg_h">Altura</span><div class="unit"><input type="number" id="g-h" value="14" step="0.5" inputmode="decimal"><span>cm</span></div></label>
+          </div>
+          <label class="f"><span data-t="tg_v">Volume da peça (desconta do total)</span><div class="unit"><input type="number" id="g-p" value="0.5" step="0.1" inputmode="decimal"><span>L</span></div></label>
+          <div class="grid2">
+            <div><span class="muted" data-t="tg_plaster">Gesso</span><div class="out" id="g-kg"></div></div>
+            <div><span class="muted" data-t="tg_water">Água</span><div class="out" id="g-l2"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt" id="prazos">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow" data-t="tm_eyebrow">Prazos</p><h2 data-t="tm_h2">Rápido onde dá para ser rápido.</h2></div>
+      <div class="times">
+        <div><p class="k" data-t="tm1_k">Análise</p><p class="v" data-t="tm1_v">Na hora</p><p class="muted" data-t="tm1_d">Pré-análise automática e revisão humana em poucas horas úteis.</p></div>
+        <div><p class="k" data-t="tm2_k">Pagamento</p><p class="v" data-t="tm2_v">Instantâneo</p><p class="muted" data-t="tm2_d">Pix e cartão na hora. Boleto e transferências em até 1 dia útil.</p></div>
+        <div><p class="k" data-t="tm3_k">Entrega do .STL</p><p class="v" data-t="tm3_v">1 a 3 dias úteis</p><p class="muted" data-t="tm3_d">Peça simples sai em 1 dia. Matriz com várias partes leva até 3.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pedidos">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow" data-t="mo_eyebrow">Acompanhamento</p><h2 data-t="mo_h2">Meus pedidos</h2><p class="muted" data-t="mo_d">Os pedidos ficam salvos neste aparelho.</p></div>
+      <div class="orders" id="orders"></div>
+    </div>
+  </section>
+
+  <section class="alt" id="faq">
+    <div class="wrap" style="max-width:820px">
+      <div class="sec-head"><p class="eyebrow">FAQ</p><h2 data-t="faq_h2">Perguntas frequentes</h2></div>
+      <div id="faqList"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>© 2026 Molde · <span data-t="foot_t">Modelagem 3D para ceramistas do Brasil e da América Latina.</span></span>
+    <span><a href="#faq" data-t="foot_terms">Termos</a> · <a href="#faq" data-t="foot_priv">Privacidade</a> · <a href="#faq" data-t="foot_ref">Reembolsos</a></span>
+  </div>
+</footer>
+
+<div class="sticky-cta" id="sticky"><a class="btn primary" href="#pedido" data-t="cta_upload">Enviar minha foto</a></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+"use strict";
+
+/* ------------ Configuração do negócio (edite aqui) ------------ */
+var CONFIG = {
+  whatsapp: "",            // número do ateliê com DDI, só dígitos. Ex.: "5511912345678". Vazio = o cliente escolhe o contato.
+  orderPrefix: "MLD",
+  countries: {
+    BR: { name: "Brasil",    lang: "pt", cur: "R$",   loc: "pt-BR", piece: 129,   matrix: 259,   pay: ["Pix", "Cartão até 3x sem juros", "Boleto"], pixOff: 5 },
+    AR: { name: "Argentina", lang: "es", cur: "ARS",  loc: "es-AR", piece: 29000, matrix: 58000, pay: ["Mercado Pago", "Transferencia", "Tarjeta"] },
+    MX: { name: "México",    lang: "es", cur: "MXN",  loc: "es-MX", piece: 449,   matrix: 899,   pay: ["Tarjeta", "OXXO", "SPEI"] },
+    CL: { name: "Chile",     lang: "es", cur: "CLP",  loc: "es-CL", piece: 23900, matrix: 47900, pay: ["Webpay", "Transferencia"] },
+    CO: { name: "Colombia",  lang: "es", cur: "COP",  loc: "es-CO", piece: 99000, matrix: 199000,pay: ["PSE", "Nequi", "Tarjeta"] },
+    PE: { name: "Perú",      lang: "es", cur: "S/",   loc: "es-PE", piece: 89,    matrix: 179,   pay: ["Yape", "Plin", "Tarjeta"] },
+    UY: { name: "Uruguay",   lang: "es", cur: "$U",   loc: "es-UY", piece: 990,   matrix: 1990,  pay: ["Mercado Pago", "Transferencia"] },
+    XX: { name: "Otro / Outro", lang: "es", cur: "USD", loc: "en-US", piece: 25,  matrix: 50,    pay: ["Tarjeta internacional", "PayPal"] }
+  },
+  wallMm: 30,      // espessura de gesso em cada lado
+  funnelMm: 30,    // altura do funil de colagem
+  baseMm: 25       // fundo do molde
+};
+
+var TYPES = ["mug", "vase", "bowl", "plate", "cuia", "diffuser", "sculpt", "other"];
+var STATUSES = ["st_recv", "st_anal", "st_pay", "st_model", "st_done"];
+
+/* ------------ Textos ------------ */
+var T = {
+pt: {
+  nav_orders: "Meus pedidos", hero_eyebrow: "Da foto ao gesso",
+  hero_h1: "Sua peça vira molde. <em>Você só manda a foto.</em>",
+  hero_lead: "Envie a foto da peça que você quer produzir. Verificamos se a peça é moldável, modelamos em 3D com a contração da sua argila e entregamos o arquivo .STL pronto para imprimir a matriz do seu molde de gesso.",
+  cta_upload: "Enviar minha foto", cta_prices: "Ver preços",
+  spec1: "Arquivo .STL", spec2: "Pronto para imprimir", spec3: "Contração calculada", spec4: "Feito por ceramistas",
+  svg_funnel: "FUNIL DE COLAGEM", svg_part: "LINHA DE PARTIÇÃO", svg_stamp: "CANECA 300 ml · ARGILA −12%",
+  how_eyebrow: "Como funciona", how_h2: "Quatro etapas, do celular à impressora.",
+  s1_t: "Você envia a foto", s1_d: "Da peça de referência, de frente e com fundo liso. Lateral e topo ajudam.",
+  s2_t: "Checamos a viabilidade", s2_d: "Contrassaídas, alças, tamanho e número de partes do molde. Resultado na hora.",
+  s3_t: "Modelamos em 3D", s3_d: "Já ampliada pela contração da sua argila e com funil de colagem.",
+  s4_t: "Entregamos o .STL", s4_d: "Pronto para imprimir e vazar o gesso. Revisão incluída.",
+  ord_eyebrow: "Novo pedido", ord_h2: "Envie sua peça e veja na hora se ela vira molde.",
+  w1: "Foto", w2: "Peça", w3: "Viabilidade", w4: "Plano", w5: "Envio",
+  slot_front: "Frente", slot_side: "Lateral", slot_top: "Topo", required: "obrigatória", optional: "(opcional)",
+  slot_add: "Toque para fotografar ou escolher", remove: "Remover foto",
+  tip1: "Fundo liso e contrastante com a peça.", tip2: "Câmera na altura do meio da peça, sem inclinar.", tip3: "Luz difusa, sem sombra forte.", tip4: "Uma régua ou moeda ao lado ajuda na escala.",
+  next: "Continuar", back: "Voltar", check: "Verificar viabilidade", choose_plan: "Escolher plano", send: "Enviar pedido",
+  need_photo: "Envie pelo menos a foto de frente para continuar.",
+  q_res_ok: "Resolução boa", q_res_low: "Resolução baixa ({w}×{h} px). Se puder, use a câmera traseira sem zoom.",
+  q_light_ok: "Iluminação adequada", q_dark: "Foto escura. Aproxime de uma janela ou acenda uma luz.", q_bright: "Foto estourada. Evite luz direta sobre a peça.",
+  q_con_ok: "Bom contraste com o fundo", q_con_low: "Pouco contraste. Use um fundo de cor diferente da peça.",
+  type_q: "Que tipo de peça é?",
+  t_mug: "Caneca", t_vase: "Vaso", t_bowl: "Tigela", t_plate: "Prato", t_cuia: "Cuia / mate", t_diffuser: "Difusor", t_sculpt: "Escultura / figura", t_other: "Outro",
+  f_m_p: "se tiver", e_type: "Escolha o tipo de peça.", e_dims: "Informe a altura e a largura (ou diâmetro) da sua peça.",
+  q_back: "A peça aparece bem mais escura que o fundo e os detalhes podem sumir. Use um fundo liso mais escuro ou ilumine a peça de frente, sem janela atrás dela.",
+  c_sculpt: "Escultura com contrassaídas", c_sculpt_d: "Formas orgânicas (mãos, figuras) pedem molde de 4 a 8 partes ou ajustes no modelo, como preencher vãos ou separar dedos. O valor final sai depois da revisão.", parts_tbd: "4 a 8", mouth: "boca", from: "a partir de", sculpt_price: "Escultura: valor final confirmado depois da revisão, antes de qualquer cobrança.",
+  f_h: "Altura final", f_d: "Largura / diâmetro máx.", f_m: "Diâmetro da boca", f_c: "Contração da sua argila", f_c_s: "Grês costuma ficar entre 10 e 13%.",
+  f_bed: "Mesa da sua impressora", bed_none: "Não tenho impressora", f_handle: "Tem alça ou asa?", yes: "Sim", no: "Não",
+  f_notes: "Observações", f_notes_p: "Ex.: quero a borda um pouco mais grossa, tirar o relevo da marca…",
+  scale_note: "Modelo a imprimir: {h} mm de altura × Ø {d} mm  (peça final ÷ (1 − {c}%))",
+  v_ok: "Viável", v_ok_d: "A peça pode ser moldada como está. Siga para escolher o plano.",
+  v_warn: "Viável com ajustes", v_warn_d: "Dá para moldar. Veja os pontos abaixo; o modelador ajusta isso para você.",
+  v_rev: "Revisão manual", v_rev_d: "Precisamos olhar com calma. Envie mesmo assim: se não for viável, você não paga.",
+  fig_model: "Modelo", fig_parts: "Partes do molde", fig_box: "Caixa do molde", fig_plaster: "Gesso aprox.",
+  c_photo_ok: "Foto utilizável", c_photo_warn: "Foto com ressalvas", c_photo_more: "Fotos de lateral e topo deixam o modelo mais fiel.",
+  c_parts2: "Molde bipartido", c_parts2_d: "Formato aberto, sai do molde em 2 partes.",
+  c_parts3: "Molde tripartido", c_parts3_d: "A boca é mais estreita que o corpo (contrassaída). Precisa de 2 laterais + fundo.",
+  c_parts1: "Molde de 1 parte (+ anel)", c_parts1_d: "Peça rasa, ideal para prensagem ou colagem com anel.",
+  c_handle: "Alça", c_handle_d: "Fazemos a alça no mesmo molde ou como molde separado para colar depois, conforme a espessura.",
+  c_bed_ok: "Cabe na sua impressora", c_bed_ok_d: "A maior parte da matriz mede {s} mm.",
+  c_bed_split: "Matriz maior que a mesa", c_bed_split_d: "A caixa mede {s} mm. Dividimos a matriz em mais partes com encaixes para imprimir.",
+  c_bed_none: "Sem impressora", c_bed_none_d: "Indicamos um serviço de impressão perto de você ou imprima em um makerspace.",
+  c_size_bad: "Tamanho fora do padrão", c_size_bad_d: "Peças abaixo de 3 cm ou acima de 40 cm passam por revisão manual.",
+  c_size_ok: "Tamanho dentro do padrão", c_size_ok_d: "Entre 3 e 40 cm de altura.",
+  c_shrink: "Contração aplicada", c_shrink_d: "{c}% — confira na ficha técnica da sua argila.",
+  via_disc: "Pré-análise automática. Um modelador revisa cada pedido antes da cobrança; se a peça não for viável, você não paga.",
+  pr_eyebrow: "Preços", pr_h2: "Pague só se a peça for viável.",
+  price_note: "Valores para {country} em {cur}. Moeda e meios de pagamento mudam conforme o país escolhido no topo.",
+  p_piece: "Peça", p_piece_d: "O .STL da sua peça com funil de colagem, para fazer o molde do jeito tradicional.",
+  p_piece_i: ["Análise de viabilidade", "Modelo 3D a partir da sua foto", "Contração da argila aplicada", "Arquivo .STL da peça", "1 rodada de ajustes"],
+  p_matrix: "Matriz", p_matrix_d: "A peça e todas as partes da matriz para imprimir e vazar o gesso direto.",
+  p_matrix_i: ["Tudo do plano Peça", "Molde dividido em partes para colagem", "Chaves de encaixe e travas incluídas", "Paredes, fundo e funil prontos para imprimir", "Partes ajustadas à mesa da sua impressora"],
+  popular: "Mais pedido", choose: "Escolher {p}", chosen: "Escolhido", pix: "{p} no Pix ({o}% off)",
+  pay_q: "Como prefere pagar?", f_name: "Nome", f_studio: "Ateliê ou marca",
+  terms: "Li e aceito os termos. Minhas fotos são usadas só para modelar esta peça (LGPD).",
+  sum_piece: "Peça", sum_plan: "Plano", sum_pay: "Pagamento", sum_total: "Total",
+  e_name: "Informe seu nome.", e_contact: "Informe WhatsApp ou e-mail para receber o arquivo.", e_email: "O e-mail parece incompleto.", e_terms: "Aceite os termos para enviar.", e_plan: "Escolha um plano.", e_pay: "Escolha a forma de pagamento.",
+  conf_t: "Pedido recebido", conf_d: "Guarde o código. Para agilizar, mande a mensagem abaixo com as fotos pelo WhatsApp.",
+  copy: "Copiar mensagem", copied: "Mensagem copiada", copy_fail: "Não deu para copiar. Selecione o texto manualmente.",
+  open_wa: "Abrir WhatsApp", new_order: "Fazer outro pedido", see_orders: "Ver meus pedidos",
+  wa_msg: "Olá! Acabei de fazer o pedido {code} no Molde.\nPeça: {type}, {dims}, contração {c}%.\nPlano: {plan} — {price}\nPagamento: {pay}\nPré-análise: {verdict}\nNome: {name}\nVou enviar as fotos aqui.",
+  tl_eyebrow: "Calculadoras grátis", tl_h2: "Contas de ateliê, sem planilha.",
+  tc_t: "Contração da argila", tc_d: "Quanto maior o modelo precisa ser para a peça sair do forno no tamanho certo.", tc_final: "Medida final", tc_out: "Medida do modelo",
+  tg_t: "Gesso para o molde", tg_d: "Proporção 100 : 70 (gesso : água), consistência usual para colagem.", tg_w: "Largura", tg_l: "Compr.", tg_h: "Altura", tg_v: "Volume da peça (desconta do total)", tg_plaster: "Gesso", tg_water: "Água",
+  tm_eyebrow: "Prazos", tm_h2: "Rápido onde dá para ser rápido.",
+  tm1_k: "Análise", tm1_v: "Na hora", tm1_d: "Pré-análise automática e revisão humana em poucas horas úteis.",
+  tm2_k: "Pagamento", tm2_v: "Instantâneo", tm2_d: "Pix e cartão na hora. Boleto e transferências em até 1 dia útil.",
+  tm3_k: "Entrega do .STL", tm3_v: "1 a 3 dias úteis", tm3_d: "Peça simples sai em 1 dia. Matriz com várias partes leva até 3.",
+  mo_eyebrow: "Acompanhamento", mo_h2: "Meus pedidos", mo_d: "Os pedidos ficam salvos neste aparelho.",
+  example: "exemplo", no_orders: "Você ainda não fez pedidos. O pedido abaixo é só um exemplo.",
+  st_recv: "Recebido", st_anal: "Análise", st_pay: "Pagamento", st_model: "Modelagem", st_done: "Entregue",
+  faq_h2: "Perguntas frequentes",
+  faq: [
+    ["Como funciona o pagamento?", "Você só paga depois que um modelador confirma que a peça é viável. No Brasil aceitamos Pix (com desconto), cartão em até 3x e boleto. Em outros países, os meios locais aparecem ao escolher o país no topo."],
+    ["E se a peça não for viável?", "Avisamos antes de cobrar e explicamos o motivo. Muitas vezes uma pequena mudança, como abrir a boca ou separar a alça, resolve."],
+    ["Em que formato recebo o arquivo?", "Arquivo .STL em milímetros, já ampliado pela contração da argila que você informou. Se precisar de .3MF ou .STEP, é só pedir."],
+    ["Preciso ter impressora 3D?", "Não. Você pode imprimir em um serviço de impressão ou makerspace. No plano Matriz dividimos as partes para caber na mesa da impressora que você indicar."],
+    ["Que impressão e material uso para a matriz?", "PLA com 0,2 mm de camada e 3 a 4 perímetros funciona bem. Passe desmoldante (sabão de coco ou vaselina) antes de vazar o gesso."],
+    ["Posso pedir reembolso?", "Sim, se o arquivo não corresponder às medidas combinadas e não for corrigido na rodada de ajustes. Depois do download do arquivo final aprovado, não há reembolso."],
+    ["Posso copiar a peça de outra marca?", "Só envie peças de sua autoria ou que você tem direito de reproduzir. Recusamos pedidos que copiem desenhos protegidos de terceiros."],
+    ["O que fazem com minhas fotos?", "Usamos só para modelar o seu pedido e apagamos depois de 90 dias, conforme a LGPD. Não publicamos sem sua autorização."]
+  ],
+  foot_t: "Modelagem 3D para ceramistas do Brasil e da América Latina.", foot_terms: "Termos", foot_priv: "Privacidade", foot_ref: "Reembolsos"
+},
+es: {
+  nav_orders: "Mis pedidos", hero_eyebrow: "De la foto al yeso",
+  hero_h1: "Tu pieza se vuelve molde. <em>Vos solo mandás la foto.</em>",
+  hero_lead: "Enviá la foto de la pieza que querés producir. Verificamos si la pieza se puede moldear, la modelamos en 3D con la contracción de tu arcilla y te entregamos el archivo .STL listo para imprimir la matriz de tu molde de yeso.",
+  cta_upload: "Enviar mi foto", cta_prices: "Ver precios",
+  spec1: "Archivo .STL", spec2: "Listo para imprimir", spec3: "Contracción calculada", spec4: "Hecho por ceramistas",
+  svg_funnel: "CUELLO DE COLADA", svg_part: "LÍNEA DE PARTICIÓN", svg_stamp: "TAZA 300 ml · ARCILLA −12%",
+  how_eyebrow: "Cómo funciona", how_h2: "Cuatro pasos, del celular a la impresora.",
+  s1_t: "Enviás la foto", s1_d: "De la pieza de referencia, de frente y con fondo liso. Lateral y superior ayudan.",
+  s2_t: "Chequeamos la viabilidad", s2_d: "Contrasalidas, asas, tamaño y cantidad de partes del molde. Resultado al instante.",
+  s3_t: "Modelamos en 3D", s3_d: "Ya ampliada por la contracción de tu arcilla y con cuello de colada.",
+  s4_t: "Entregamos el .STL", s4_d: "Listo para imprimir y colar el yeso. Revisión incluida.",
+  ord_eyebrow: "Nuevo pedido", ord_h2: "Enviá tu pieza y mirá al instante si puede ser molde.",
+  w1: "Foto", w2: "Pieza", w3: "Viabilidad", w4: "Plan", w5: "Envío",
+  slot_front: "Frente", slot_side: "Lateral", slot_top: "Superior", required: "obligatoria", optional: "(opcional)",
+  slot_add: "Tocá para sacar o elegir una foto", remove: "Quitar foto",
+  tip1: "Fondo liso que contraste con la pieza.", tip2: "Cámara a la altura del centro de la pieza, sin inclinar.", tip3: "Luz difusa, sin sombras fuertes.", tip4: "Una regla o moneda al lado ayuda con la escala.",
+  next: "Continuar", back: "Volver", check: "Verificar viabilidad", choose_plan: "Elegir plan", send: "Enviar pedido",
+  need_photo: "Subí al menos la foto de frente para continuar.",
+  q_res_ok: "Buena resolución", q_res_low: "Resolución baja ({w}×{h} px). Si podés, usá la cámara trasera sin zoom.",
+  q_light_ok: "Iluminación adecuada", q_dark: "Foto oscura. Acercate a una ventana o prendé una luz.", q_bright: "Foto sobreexpuesta. Evitá luz directa sobre la pieza.",
+  q_con_ok: "Buen contraste con el fondo", q_con_low: "Poco contraste. Usá un fondo de otro color que la pieza.",
+  type_q: "¿Qué tipo de pieza es?",
+  t_mug: "Taza", t_vase: "Jarrón", t_bowl: "Bowl", t_plate: "Plato", t_cuia: "Mate", t_diffuser: "Difusor", t_sculpt: "Escultura / figura", t_other: "Otro",
+  f_m_p: "si tiene", e_type: "Elegí el tipo de pieza.", e_dims: "Ingresá la altura y el ancho (o diámetro) de tu pieza.",
+  q_back: "La pieza se ve mucho más oscura que el fondo y los detalles pueden perderse. Usá un fondo liso más oscuro o iluminá la pieza de frente, sin ventana detrás.",
+  c_sculpt: "Escultura con contrasalidas", c_sculpt_d: "Las formas orgánicas (manos, figuras) piden un molde de 4 a 8 partes o ajustes en el modelo, como rellenar huecos o separar dedos. El precio final sale después de la revisión.", parts_tbd: "4 a 8", mouth: "boca", from: "desde", sculpt_price: "Escultura: el precio final se confirma después de la revisión, antes de cobrar.",
+  f_h: "Altura final", f_d: "Ancho / diámetro máx.", f_m: "Diámetro de la boca", f_c: "Contracción de tu arcilla", f_c_s: "El gres suele estar entre 10 y 13%.",
+  f_bed: "Cama de tu impresora", bed_none: "No tengo impresora", f_handle: "¿Tiene asa?", yes: "Sí", no: "No",
+  f_notes: "Observaciones", f_notes_p: "Ej.: quiero el borde un poco más grueso, quitar el relieve de la marca…",
+  scale_note: "Modelo a imprimir: {h} mm de altura × Ø {d} mm  (pieza final ÷ (1 − {c}%))",
+  v_ok: "Viable", v_ok_d: "La pieza se puede moldear como está. Seguí para elegir el plan.",
+  v_warn: "Viable con ajustes", v_warn_d: "Se puede moldear. Mirá los puntos de abajo; el modelador lo ajusta por vos.",
+  v_rev: "Revisión manual", v_rev_d: "Necesitamos mirarla con calma. Envíala igual: si no es viable, no pagás.",
+  fig_model: "Modelo", fig_parts: "Partes del molde", fig_box: "Caja del molde", fig_plaster: "Yeso aprox.",
+  c_photo_ok: "Foto utilizable", c_photo_warn: "Foto con observaciones", c_photo_more: "Fotos lateral y superior hacen el modelo más fiel.",
+  c_parts2: "Molde de 2 partes", c_parts2_d: "Forma abierta, sale del molde en 2 partes.",
+  c_parts3: "Molde de 3 partes", c_parts3_d: "La boca es más angosta que el cuerpo (contrasalida). Necesita 2 laterales + base.",
+  c_parts1: "Molde de 1 parte (+ anillo)", c_parts1_d: "Pieza baja, ideal para prensado o colada con anillo.",
+  c_handle: "Asa", c_handle_d: "Hacemos el asa en el mismo molde o como molde aparte para pegar después, según el grosor.",
+  c_bed_ok: "Entra en tu impresora", c_bed_ok_d: "La parte más grande de la matriz mide {s} mm.",
+  c_bed_split: "Matriz más grande que la cama", c_bed_split_d: "La caja mide {s} mm. Dividimos la matriz en más partes con encastres para imprimir.",
+  c_bed_none: "Sin impresora", c_bed_none_d: "Te recomendamos un servicio de impresión cerca tuyo o un makerspace.",
+  c_size_bad: "Tamaño fuera de lo habitual", c_size_bad_d: "Piezas de menos de 3 cm o más de 40 cm pasan por revisión manual.",
+  c_size_ok: "Tamaño dentro de lo habitual", c_size_ok_d: "Entre 3 y 40 cm de altura.",
+  c_shrink: "Contracción aplicada", c_shrink_d: "{c}% — revisá la ficha técnica de tu arcilla.",
+  via_disc: "Análisis previo automático. Un modelador revisa cada pedido antes de cobrar; si la pieza no es viable, no pagás.",
+  pr_eyebrow: "Precios", pr_h2: "Pagás solo si la pieza es viable.",
+  price_note: "Precios para {country} en {cur}. La moneda y los medios de pago cambian según el país elegido arriba.",
+  p_piece: "Pieza", p_piece_d: "El .STL de tu pieza con cuello de colada, para hacer el molde de forma tradicional.",
+  p_piece_i: ["Análisis de viabilidad", "Modelo 3D a partir de tu foto", "Contracción de la arcilla aplicada", "Archivo .STL de la pieza", "1 ronda de ajustes"],
+  p_matrix: "Matriz", p_matrix_d: "La pieza y todas las partes de la matriz para imprimir y colar el yeso directo.",
+  p_matrix_i: ["Todo lo del plan Pieza", "Molde partido en piezas para colada", "Tacos y llaves de registro incluidos", "Paredes, base y cuello listos para imprimir", "Partes ajustadas a la cama de tu impresora"],
+  popular: "Más pedido", choose: "Elegir {p}", chosen: "Elegido", pix: "{p} con Pix ({o}% off)",
+  pay_q: "¿Cómo preferís pagar?", f_name: "Nombre", f_studio: "Taller o marca",
+  terms: "Leí y acepto los términos. Mis fotos se usan solo para modelar esta pieza.",
+  sum_piece: "Pieza", sum_plan: "Plan", sum_pay: "Pago", sum_total: "Total",
+  e_name: "Ingresá tu nombre.", e_contact: "Ingresá WhatsApp o e-mail para recibir el archivo.", e_email: "El e-mail parece incompleto.", e_terms: "Aceptá los términos para enviar.", e_plan: "Elegí un plan.", e_pay: "Elegí el medio de pago.",
+  conf_t: "Pedido recibido", conf_d: "Guardá el código. Para agilizar, mandá el mensaje de abajo con las fotos por WhatsApp.",
+  copy: "Copiar mensaje", copied: "Mensaje copiado", copy_fail: "No se pudo copiar. Seleccioná el texto a mano.",
+  open_wa: "Abrir WhatsApp", new_order: "Hacer otro pedido", see_orders: "Ver mis pedidos",
+  wa_msg: "¡Hola! Acabo de hacer el pedido {code} en Molde.\nPieza: {type}, {dims}, contracción {c}%.\nPlan: {plan} — {price}\nPago: {pay}\nAnálisis previo: {verdict}\nNombre: {name}\nTe mando las fotos por acá.",
+  tl_eyebrow: "Calculadoras gratis", tl_h2: "Cuentas de taller, sin planilla.",
+  tc_t: "Contracción de la arcilla", tc_d: "Cuánto más grande tiene que ser el modelo para que la pieza salga del horno con la medida justa.", tc_final: "Medida final", tc_out: "Medida del modelo",
+  tg_t: "Yeso para el molde", tg_d: "Proporción 100 : 70 (yeso : agua), consistencia habitual para colada.", tg_w: "Ancho", tg_l: "Largo", tg_h: "Alto", tg_v: "Volumen de la pieza (se descuenta)", tg_plaster: "Yeso", tg_water: "Agua",
+  tm_eyebrow: "Tiempos", tm_h2: "Rápido donde se puede ser rápido.",
+  tm1_k: "Análisis", tm1_v: "Al instante", tm1_d: "Análisis previo automático y revisión humana en pocas horas hábiles.",
+  tm2_k: "Pago", tm2_v: "Inmediato", tm2_d: "Tarjeta y billeteras al instante. Transferencias en hasta 1 día hábil.",
+  tm3_k: "Entrega del .STL", tm3_v: "1 a 3 días hábiles", tm3_d: "Una pieza simple sale en 1 día. Una matriz con varias partes, hasta 3.",
+  mo_eyebrow: "Seguimiento", mo_h2: "Mis pedidos", mo_d: "Los pedidos se guardan en este dispositivo.",
+  example: "ejemplo", no_orders: "Todavía no hiciste pedidos. El de abajo es solo un ejemplo.",
+  st_recv: "Recibido", st_anal: "Análisis", st_pay: "Pago", st_model: "Modelado", st_done: "Entregado",
+  faq_h2: "Preguntas frecuentes",
+  faq: [
+    ["¿Cómo se paga?", "Pagás recién cuando un modelador confirma que la pieza es viable. Los medios de pago dependen del país elegido arriba: Mercado Pago, OXXO, SPEI, Webpay, PSE, Nequi, Yape y tarjeta, entre otros."],
+    ["¿Qué pasa si la pieza no es viable?", "Te avisamos antes de cobrar y te explicamos por qué. Muchas veces un cambio chico, como abrir la boca o separar el asa, lo resuelve."],
+    ["¿En qué formato recibo el archivo?", "Archivo .STL en milímetros, ya ampliado por la contracción de la arcilla que indicaste. Si necesitás .3MF o .STEP, pedilo."],
+    ["¿Tengo que tener impresora 3D?", "No. Podés imprimir en un servicio de impresión o makerspace. En el plan Matriz dividimos las partes para que entren en la cama de la impresora que indiques."],
+    ["¿Con qué imprimo la matriz?", "PLA con capa de 0,2 mm y 3 a 4 perímetros funciona bien. Aplicá desmoldante (jabón o vaselina) antes de colar el yeso."],
+    ["¿Puedo pedir reembolso?", "Sí, si el archivo no coincide con las medidas acordadas y no se corrige en la ronda de ajustes. Después de descargar el archivo final aprobado no hay reembolso."],
+    ["¿Puedo copiar una pieza de otra marca?", "Enviá solo piezas de tu autoría o que tengas derecho a reproducir. Rechazamos pedidos que copien diseños protegidos de terceros."],
+    ["¿Qué hacen con mis fotos?", "Las usamos solo para modelar tu pedido y las borramos a los 90 días. No las publicamos sin tu permiso."]
+  ],
+  foot_t: "Modelado 3D para ceramistas de Brasil y Latinoamérica.", foot_terms: "Términos", foot_priv: "Privacidad", foot_ref: "Reembolsos"
+}
+};
+
+/* ------------ Estado ------------ */
+var S = {
+  lang: "pt", country: "BR", step: 0, maxStep: 0,
+  photos: [null, null, null],   // {url, w, h, mean, std}
+  type: null, plan: "matrix", pay: null, result: null
+};
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function t(k, vars) {
+  var s = (T[S.lang][k] !== undefined ? T[S.lang][k] : T.pt[k]);
+  if (typeof s !== "string") return s;
+  if (vars) Object.keys(vars).forEach(function (v) { s = s.split("{" + v + "}").join(vars[v]); });
+  return s;
+}
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem("molde_" + k)); localStorage.setItem("molde_" + k, JSON.stringify(v)); } catch (e) { return null; } }
+function C() { return CONFIG.countries[S.country]; }
+function money(v, c) {
+  c = c || C();
+  var n = new Intl.NumberFormat(c.loc, { maximumFractionDigits: 0 }).format(v);
+  return c.cur + " " + n;
+}
+function num(v, d) { return new Intl.NumberFormat(S.lang === "pt" ? "pt-BR" : "es-AR", { maximumFractionDigits: d == null ? 1 : d, minimumFractionDigits: d == null ? 0 : d }).format(v); }
+function val(id) { var v = parseFloat(String($(id).value).replace(",", ".")); return isFinite(v) ? v : 0; }
+function toast(msg) { var el = $("#toast"); el.textContent = msg; el.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(function () { el.hidden = true; }, 2400); }
+
+/* ------------ i18n ------------ */
+function applyLang() {
+  document.documentElement.lang = S.lang === "pt" ? "pt-BR" : "es";
+  $$("[data-t]").forEach(function (el) {
+    var v = t(el.getAttribute("data-t"));
+    if (typeof v !== "string") return;
+    if (el.hasAttribute("data-html")) el.innerHTML = v; else el.textContent = v;
+  });
+  $$("[data-tp]").forEach(function (el) { el.placeholder = t(el.getAttribute("data-tp")); });
+  $("#lang-pt").setAttribute("aria-pressed", S.lang === "pt");
+  $("#lang-es").setAttribute("aria-pressed", S.lang === "es");
+  renderAll();
+}
+
+/* ------------ Fotos ------------ */
+var SLOT_KEYS = ["slot_front", "slot_side", "slot_top"];
+function renderSlots() {
+  var box = $("#slots"); box.innerHTML = "";
+  SLOT_KEYS.forEach(function (k, i) {
+    var p = S.photos[i];
+    var lab = document.createElement("label");
+    lab.className = "slot";
+    lab.innerHTML = '<span class="tag">' + esc(t(k)) + (i === 0 ? " · " + esc(t("required")) : "") + '</span>' +
+      (p ? '<img alt="' + esc(t(k)) + '" src="' + p.url + '"><button type="button" class="rm" aria-label="' + esc(t("remove")) + '">×</button>'
+         : '<span class="cap"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><b>' + esc(t(k)) + '</b>' + esc(t("slot_add")) + '</span><input type="file" accept="image/*" id="photo-' + i + '" aria-label="' + esc(t(k)) + '">');
+    if (p) lab.querySelector(".rm").addEventListener("click", function (e) { e.preventDefault(); S.photos[i] = null; renderSlots(); renderPhotoQ(); });
+    else {
+      var inp = lab.querySelector("input");
+      inp.addEventListener("change", function () { if (inp.files[0]) loadPhoto(inp.files[0], i); });
+      ["dragover", "dragenter"].forEach(function (ev) { lab.addEventListener(ev, function (e) { e.preventDefault(); lab.classList.add("drag"); }); });
+      ["dragleave", "drop"].forEach(function (ev) { lab.addEventListener(ev, function () { lab.classList.remove("drag"); }); });
+      lab.addEventListener("drop", function (e) { e.preventDefault(); var f = e.dataTransfer.files[0]; if (f && /^image\//.test(f.type)) loadPhoto(f, i); });
+    }
+    box.appendChild(lab);
+  });
+}
+function loadPhoto(file, i) {
+  var url = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function () {
+    // análise rápida: luminância média e desvio padrão numa versão reduzida
+    var sc = Math.min(1, 160 / Math.max(img.naturalWidth, img.naturalHeight));
+    var cw = Math.max(1, Math.round(img.naturalWidth * sc)), ch = Math.max(1, Math.round(img.naturalHeight * sc));
+    var cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+    var ctx = cv.getContext("2d"); ctx.drawImage(img, 0, 0, cw, ch);
+    var d = ctx.getImageData(0, 0, cw, ch).data, sum = 0, sq = 0, n = d.length / 4;
+    var cs = 0, cn = 0, es = 0, en = 0;
+    for (var j = 0; j < d.length; j += 4) {
+      var y = 0.2126 * d[j] + 0.7152 * d[j + 1] + 0.0722 * d[j + 2]; sum += y; sq += y * y;
+      var px = (j / 4) % cw / cw, py = Math.floor(j / 4 / cw) / ch;
+      if (px > .3 && px < .7 && py > .3 && py < .7) { cs += y; cn++; }        // centro (onde costuma estar a peça)
+      else if (px < .12 || px > .88 || py < .12) { es += y; en++; }          // bordas e topo (fundo)
+    }
+    var mean = sum / n, std = Math.sqrt(Math.max(0, sq / n - mean * mean));
+    var back = (en && cn) ? es / en - cs / cn : 0;
+    S.photos[i] = { url: url, w: img.naturalWidth, h: img.naturalHeight, mean: mean, std: std, back: back, name: file.name };
+    renderSlots(); renderPhotoQ();
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); };
+  img.src = url;
+}
+function photoIssues() {
+  var p = S.photos[0]; if (!p) return null;
+  var out = [];
+  var minSide = Math.min(p.w, p.h);
+  out.push(minSide < 700 ? { s: "warn", m: t("q_res_low", { w: p.w, h: p.h }) } : { s: "ok", m: t("q_res_ok") });
+  out.push(p.mean < 55 ? { s: "warn", m: t("q_dark") } : p.mean > 225 ? { s: "warn", m: t("q_bright") } : { s: "ok", m: t("q_light_ok") });
+  if (p.back > 50) out.push({ s: "warn", m: t("q_back") });
+  out.push(p.std < 28 ? { s: "warn", m: t("q_con_low") } : { s: "ok", m: t("q_con_ok") });
+  return out;
+}
+function renderPhotoQ() {
+  var q = photoIssues(), box = $("#photoq");
+  if (!q) { box.innerHTML = ""; return; }
+  box.innerHTML = '<ul class="checks">' + q.map(function (x) {
+    return '<li><span class="dot ' + x.s + '">' + (x.s === "ok" ? "✓" : "!") + '</span><div>' + esc(x.m) + '</div></li>';
+  }).join("") + '</ul>';
+}
+
+/* ------------ Peça ------------ */
+function renderTypes() {
+  $("#types").innerHTML = TYPES.map(function (k) {
+    return '<label class="chip"><input type="radio" name="type" value="' + k + '"' + (S.type === k ? " checked" : "") + '><span>' + esc(t("t_" + k)) + '</span></label>';
+  }).join("");
+  $$("#types input").forEach(function (r) { r.addEventListener("change", function () { S.type = r.value; $("#pieceErr").textContent = ""; renderScale(); if (S.maxStep >= 2) renderResult(); }); });
+}
+function scaled() {
+  var c = Math.min(30, Math.max(0, val("#c"))) / 100;
+  var f = 1 / (1 - c);
+  var m = val("#m") || val("#d");
+  return { h: val("#h") * 10 * f, d: val("#d") * 10 * f, m: m * 10 * f, c: c * 100, f: f };
+}
+function renderScale() {
+  var s = scaled();
+  $("#scaleNote").textContent = t("scale_note", { h: num(s.h), d: num(s.d), c: num(s.c) });
+}
+
+/* ------------ Viabilidade ------------ */
+function evaluate() {
+  var s = scaled(), H = val("#h"), D = val("#d"), M = val("#m") || D;
+  var handle = $("#handle").value === "1", bed = parseInt($("#bed").value, 10);
+  var checks = [], level = 0; // 0 ok, 1 warn, 2 review
+  function add(st, title, desc) { checks.push({ s: st, t: title, d: desc }); if (st === "warn") level = Math.max(level, 1); if (st === "bad") level = 2; }
+
+  var pq = photoIssues() || [];
+  var pw = pq.filter(function (x) { return x.s !== "ok"; });
+  var extra = (S.photos[1] || S.photos[2]) ? "" : " " + t("c_photo_more");
+  add(pw.length ? "warn" : "ok", pw.length ? t("c_photo_warn") : t("c_photo_ok"), (pw.map(function (x) { return x.m; }).join(" ") + extra).trim());
+
+  var parts;
+  if (S.type === "sculpt") { parts = t("parts_tbd"); add("bad", t("c_sculpt"), t("c_sculpt_d")); }
+  else if (S.type === "plate" || H < D * 0.3) { parts = 1; add("ok", t("c_parts1"), t("c_parts1_d")); }
+  else if (M < D * 0.85) { parts = 3; add("warn", t("c_parts3"), t("c_parts3_d")); }
+  else { parts = 2; add("ok", t("c_parts2"), t("c_parts2_d")); }
+  if (handle) add("warn", t("c_handle"), t("c_handle_d"));
+
+  if (H < 3 || H > 40 || D > 40) add("bad", t("c_size_bad"), t("c_size_bad_d"));
+  else add("ok", t("c_size_ok"), t("c_size_ok_d"));
+
+  var wall = CONFIG.wallMm;
+  var boxW = Math.round(s.d + 2 * wall + (handle ? 35 : 0));
+  var boxH = Math.round(s.h + CONFIG.baseMm + CONFIG.funnelMm);
+  var biggest = Math.max(boxW, boxH);
+  if (bed === 0) add("warn", t("c_bed_none"), t("c_bed_none_d"));
+  else if (biggest > bed) add("warn", t("c_bed_split"), t("c_bed_split_d", { s: boxW + " × " + boxH }));
+  else add("ok", t("c_bed_ok"), t("c_bed_ok_d", { s: boxW + " × " + boxH }));
+
+  add("ok", t("c_shrink"), t("c_shrink_d", { c: num(s.c) }));
+
+  // gesso: caixa (base quadrada) menos o volume aproximado do modelo
+  var boxL = (boxW * boxW * boxH) / 1e6;                     // litros
+  var model = Math.PI * Math.pow(s.d / 2, 2) * s.h * 0.75 / 1e6;
+  var mold = Math.max(0, boxL - model);
+  var plaster = mold * 0.94, water = mold * 0.66;
+
+  S.result = { level: level, checks: checks, parts: parts, boxW: boxW, boxH: boxH, plaster: plaster, water: water, s: s };
+  return S.result;
+}
+function renderResult() {
+  var r = evaluate();
+  var v = [["ok", "v_ok"], ["warn", "v_warn"], ["review", "v_rev"]][r.level];
+  var ph = S.photos[0];
+  $("#verdict").innerHTML = '<div class="verdict ' + v[0] + (ph ? ' has-img' : '') + '">' + (ph ? '<img alt="" src="' + ph.url + '">' : '') + '<span class="st">' + esc(t(v[1])) + '</span><h3>' + esc(t("t_" + S.type)) + ' · ' + num(val("#h")) + ' × ' + num(val("#d")) + ' cm</h3><p>' + esc(t(v[1] + "_d")) + '</p></div>';
+  $("#figs").innerHTML = [
+    [t("fig_model"), num(r.s.h, 0) + " × " + num(r.s.d, 0) + " mm"],
+    [t("fig_parts"), r.parts + (r.parts === 1 ? " + 1" : "")],
+    [t("fig_box"), r.boxW + " × " + r.boxH + " mm"],
+    [t("fig_plaster"), num(r.plaster) + " kg"]
+  ].map(function (f) { return '<div class="fig"><div class="k">' + esc(f[0]) + '</div><div class="v">' + esc(f[1]) + '</div></div>'; }).join("");
+  $("#checks").innerHTML = r.checks.map(function (c) {
+    return '<li><span class="dot ' + c.s + '">' + (c.s === "ok" ? "✓" : "!") + '</span><div><b>' + esc(c.t) + '</b><small>' + esc(c.d) + '</small></div></li>';
+  }).join("");
+}
+
+/* ------------ Planos e pagamento ------------ */
+function planCard(kind, pickable) {
+  var c = C(), price = kind === "piece" ? c.piece : c.matrix, name = t(kind === "piece" ? "p_piece" : "p_matrix");
+  var items = t(kind === "piece" ? "p_piece_i" : "p_matrix_i");
+  var sel = pickable && S.plan === kind, sc = pickable && S.type === "sculpt";
+  var pix = c.pixOff ? '<p class="alt-pay">' + esc(t("pix", { p: money(Math.round(price * (1 - c.pixOff / 100))), o: c.pixOff })) + '</p>' : "";
+  return '<div class="plan' + (kind === "matrix" ? " feat" : "") + (pickable ? " pick" : "") + (sel ? " sel" : "") + '" data-plan="' + kind + '"' + (pickable ? ' role="radio" tabindex="0" aria-checked="' + sel + '"' : "") + '>' +
+    (kind === "matrix" ? '<span class="badge">' + esc(t("popular")) + '</span>' : "") +
+    '<h3>' + esc(name) + '</h3>' + (sc ? '<p class="muted" style="font-size:.85rem;margin-bottom:-10px">' + esc(t("from")) + '</p>' : '') + '<p class="price"><small>' + esc(c.cur) + '</small>' + esc(new Intl.NumberFormat(c.loc).format(price)) + '</p>' + pix +
+    '<p class="muted">' + esc(t(kind === "piece" ? "p_piece_d" : "p_matrix_d")) + '</p><ul>' + items.map(function (i) { return "<li><span>" + esc(i) + "</span></li>"; }).join("") + '</ul>' +
+    (pickable ? '<span class="btn small' + (sel ? " primary" : "") + '" aria-hidden="true">' + esc(sel ? t("chosen") : t("choose", { p: name })) + '</span>'
+              : '<a class="btn small' + (kind === "matrix" ? " primary" : "") + '" href="#pedido" data-pick="' + kind + '">' + esc(t("choose", { p: name })) + '</a>') +
+    '</div>';
+}
+function renderPlans() {
+  var c = C();
+  $("#plans").innerHTML = planCard("piece") + planCard("matrix");
+  $("#priceNote").textContent = t("price_note", { country: c.name, cur: c.cur });
+  $("#paylist").innerHTML = c.pay.map(function (p) { return "<span>" + esc(p) + "</span>"; }).join("");
+  $$("#plans [data-pick]").forEach(function (a) { a.addEventListener("click", function () { S.plan = a.getAttribute("data-pick"); renderWizPlans(); }); });
+  renderWizPlans();
+}
+function renderWizPlans() {
+  $("#sculptNote").hidden = S.type !== "sculpt"; $("#sculptNote").textContent = t("sculpt_price");
+  $("#wizPlans").innerHTML = planCard("piece", true) + planCard("matrix", true);
+  $$("#wizPlans .plan").forEach(function (el) {
+    function pick() { S.plan = el.getAttribute("data-plan"); renderWizPlans(); renderSummary(); }
+    el.addEventListener("click", pick);
+    el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+}
+function renderPays() {
+  var c = C();
+  if (S.pay && c.pay.indexOf(S.pay) < 0) S.pay = null;
+  if (!S.pay) S.pay = c.pay[0];
+  $("#pays").innerHTML = c.pay.map(function (p, i) {
+    return '<label class="chip"><input type="radio" name="pay" id="pay-' + i + '" value="' + esc(p) + '"' + (S.pay === p ? " checked" : "") + '><span>' + esc(p) + '</span></label>';
+  }).join("");
+  $$("#pays input").forEach(function (r) { r.addEventListener("change", function () { S.pay = r.value; renderSummary(); }); });
+}
+function dims(h, d, m) {
+  return num(h) + " × " + num(d) + " cm" + (m ? " (" + t("mouth") + " " + num(m) + " cm)" : "");
+}
+function fromPrefix(type) { return type === "sculpt" ? t("from") + " " : ""; }
+function orderPrice() {
+  var c = C(), price = S.plan === "piece" ? c.piece : c.matrix;
+  if (c.pixOff && S.pay === "Pix") price = Math.round(price * (1 - c.pixOff / 100));
+  return price;
+}
+function renderSummary() {
+  var c = C();
+  var rows = [
+    [t("sum_piece"), t("t_" + S.type) + " · " + dims(val("#h"), val("#d"), val("#m"))],
+    [t("sum_plan"), t(S.plan === "piece" ? "p_piece" : "p_matrix")],
+    [t("sum_pay"), S.pay || "—"],
+    [t("sum_total"), fromPrefix(S.type) + money(orderPrice(), c)]
+  ];
+  $("#summary").innerHTML = rows.map(function (r) { return "<div><span>" + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span></div>"; }).join("");
+}
+
+/* ------------ Wizard ------------ */
+function go(n) {
+  if (n > 0 && !S.photos[0]) { S.step = 0; showStep(); toast(t("need_photo")); return; }
+  if (n >= 2) {
+    var pe = !S.type ? t("e_type") : (val("#h") <= 0 || val("#d") <= 0) ? t("e_dims") : "";
+    $("#pieceErr").textContent = pe;
+    if (pe) { S.step = 1; showStep(); return; }
+    renderResult();
+  }
+  if (n === 3) renderWizPlans();
+  if (n === 4) { renderPays(); renderSummary(); }
+  S.step = n; S.maxStep = Math.max(S.maxStep, n);
+  showStep();
+}
+function showStep() {
+  $$(".panel").forEach(function (p) { p.hidden = +p.getAttribute("data-step") !== S.step; });
+  $$(".wiz-nav button").forEach(function (b) {
+    var i = +b.getAttribute("data-go");
+    if (i === S.step) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
+    b.classList.toggle("done", i < S.step);
+    b.disabled = i > S.maxStep;
+  });
+}
+function scrollToWiz() { var r = $("#wiz").getBoundingClientRect(); if (r.top < 0 || r.top > window.innerHeight * 0.4) $("#wiz").scrollIntoView({ block: "start" }); }
+
+function genCode() {
+  var a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", s = "";
+  for (var i = 0; i < 4; i++) s += a[Math.floor(Math.random() * a.length)];
+  return CONFIG.orderPrefix + "-" + s;
+}
+function submitOrder(e) {
+  e.preventDefault();
+  var err = $("#sendErr"), name = $("#name").value.trim(), wa = $("#wa").value.trim(), email = $("#email").value.trim();
+  var msg = !name ? t("e_name") : (!wa && !email) ? t("e_contact") : (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) ? t("e_email") : !S.pay ? t("e_pay") : !$("#terms").checked ? t("e_terms") : "";
+  err.textContent = msg;
+  if (msg) return;
+  var r = S.result || evaluate();
+  var verdict = t(["v_ok", "v_warn", "v_rev"][r.level]);
+  var order = {
+    code: genCode(), date: new Date().toISOString(), country: S.country, type: S.type,
+    h: val("#h"), d: val("#d"), m: val("#m"), c: val("#c"), plan: S.plan, pay: S.pay, price: orderPrice(),
+    verdict: r.level, name: name, wa: wa, email: email, studio: $("#studio").value.trim(), notes: $("#notes").value.trim(), status: 0
+  };
+  var list = store("orders") || []; list.unshift(order); store("orders", list);
+  var text = t("wa_msg", {
+    code: order.code, type: t("t_" + order.type), h: num(order.h), d: num(order.d), m: num(order.m), c: num(order.c),
+    plan: t(order.plan === "piece" ? "p_piece" : "p_matrix"), price: fromPrefix(order.type) + money(order.price), pay: order.pay, dims: dims(order.h, order.d, order.m), verdict: verdict, name: name
+  });
+  if (order.notes) text += "\n\n" + order.notes;
+  var waUrl = "https://wa.me/" + (CONFIG.whatsapp || "") + "?text=" + encodeURIComponent(text);
+  $("#sendForm").hidden = true;
+  var box = $("#confirm"); box.hidden = false;
+  box.innerHTML = '<div class="verdict ok"><span class="st">' + esc(t("conf_t")) + '</span><p class="code">' + esc(order.code) + '</p><p>' + esc(t("conf_d")) + '</p></div>' +
+    '<pre class="msg" id="waText">' + esc(text) + '</pre>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn primary small" id="copyMsg">' + esc(t("copy")) + '</button>' +
+    '<a class="btn small" href="' + waUrl + '" target="_blank" rel="noopener">' + esc(t("open_wa")) + '</a>' +
+    '<button type="button" class="btn small" id="newOrder">' + esc(t("new_order")) + '</button>' +
+    '<a class="btn small" href="#pedidos">' + esc(t("see_orders")) + '</a></div>';
+  $("#copyMsg").addEventListener("click", function () {
+    var done = function () { toast(t("copied")); };
+    var fail = function () { var r = document.createRange(); r.selectNodeContents($("#waText")); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast(t("copy_fail")); };
+    try { navigator.clipboard.writeText(text).then(done, fail); } catch (x) { fail(); }
+  });
+  $("#newOrder").addEventListener("click", resetWizard);
+  renderOrders();
+}
+function resetWizard() {
+  S.photos = [null, null, null]; S.step = 0; S.maxStep = 0; S.result = null;
+  $("#confirm").hidden = true; $("#sendForm").hidden = false; $("#terms").checked = false; $("#notes").value = "";
+  renderSlots(); renderPhotoQ(); showStep(); scrollToWiz();
+}
+
+/* ------------ Pedidos ------------ */
+function renderOrders() {
+  var list = store("orders") || [];
+  var sample = { code: "MLD-7KQ3", date: "2026-10-09T14:20:00Z", country: "BR", type: "cuia", h: 9, d: 8.5, m: 4, c: 12, plan: "matrix", pay: "Pix", price: 246, status: 3, example: true };
+  var shown = list.length ? list : [sample];
+  var html = list.length ? "" : '<p class="muted">' + esc(t("no_orders")) + '</p>';
+  html += shown.map(function (o) {
+    var c = CONFIG.countries[o.country] || C();
+    var dt = new Date(o.date).toLocaleDateString(S.lang === "pt" ? "pt-BR" : "es-AR", { day: "2-digit", month: "short", year: "numeric" });
+    return '<article class="order"><header><div><b class="mono">' + esc(o.code) + '</b>' + (o.example ? '<span class="ex">' + esc(t("example")) + '</span>' : "") +
+      '<div class="muted" style="font-size:.88rem">' + esc(t("t_" + o.type)) + ' · ' + esc(dims(o.h, o.d)) + ' · ' + esc(t(o.plan === "piece" ? "p_piece" : "p_matrix")) + '</div></div>' +
+      '<div style="margin-left:auto;text-align:right"><b>' + esc(fromPrefix(o.type) + money(o.price, c)) + '</b><div class="muted" style="font-size:.82rem">' + esc(dt) + ' · ' + esc(o.pay) + '</div></div></header>' +
+      '<div class="track">' + STATUSES.map(function (s, i) { return '<div class="' + (i <= o.status ? "on" : "") + '">' + esc(t(s)) + '</div>'; }).join("") + '</div></article>';
+  }).join("");
+  $("#orders").innerHTML = html;
+}
+
+/* ------------ FAQ e calculadoras ------------ */
+function renderFaq() {
+  $("#faqList").innerHTML = t("faq").map(function (q, i) { return '<details id="faq-' + i + '"><summary>' + esc(q[0]) + '</summary><p>' + esc(q[1]) + '</p></details>'; }).join("");
+}
+function calcTools() {
+  var c = Math.min(30, Math.max(0, val("#t-c"))) / 100;
+  $("#t-out").textContent = num(val("#t-final") / (1 - c), 2) + " cm";
+  var box = val("#g-w") * val("#g-l") * val("#g-h") / 1000 - val("#g-p");
+  box = Math.max(0, box);
+  $("#g-kg").textContent = num(box * 0.94) + " kg";
+  $("#g-l2").textContent = num(box * 0.66) + " L";
+}
+
+function renderCountry() {
+  $("#country").innerHTML = Object.keys(CONFIG.countries).map(function (k) {
+    return '<option value="' + k + '"' + (k === S.country ? " selected" : "") + '>' + esc(CONFIG.countries[k].name) + '</option>';
+  }).join("");
+}
+function renderAll() {
+  renderSlots(); renderPhotoQ(); renderTypes(); renderScale(); renderPlans(); renderFaq(); renderOrders(); calcTools();
+  if (S.step >= 2) renderResult();
+  if (S.step === 4) { renderPays(); renderSummary(); }
+}
+
+/* ------------ Eventos ------------ */
+$("#country").addEventListener("change", function () {
+  S.country = this.value; S.lang = C().lang; store("country", S.country); store("lang", S.lang); applyLang();
+});
+$("#lang-pt").addEventListener("click", function () { S.lang = "pt"; store("lang", "pt"); applyLang(); });
+$("#lang-es").addEventListener("click", function () { S.lang = "es"; store("lang", "es"); applyLang(); });
+$("#go-orders").addEventListener("click", function () { $("#pedidos").scrollIntoView({ block: "start" }); });
+$$("[data-next]").forEach(function (b) { b.addEventListener("click", function () { go(S.step + 1); scrollToWiz(); }); });
+$$("[data-prev]").forEach(function (b) { b.addEventListener("click", function () { go(S.step - 1); scrollToWiz(); }); });
+$$(".wiz-nav button").forEach(function (b) { b.addEventListener("click", function () { go(+b.getAttribute("data-go")); }); });
+["#h", "#d", "#m", "#c", "#bed", "#handle"].forEach(function (id) { $(id).addEventListener("input", function () { renderScale(); if (S.maxStep >= 2) renderResult(); }); });
+["#t-final", "#t-c", "#g-w", "#g-l", "#g-h", "#g-p"].forEach(function (id) { $(id).addEventListener("input", calcTools); });
+$("#wiz").addEventListener("submit", submitOrder);
+
+// CTA fixo no celular: some quando o formulário está na tela
+if ("IntersectionObserver" in window) {
+  var sticky = $("#sticky"), visible = {};
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+    sticky.classList.toggle("show", !visible.pedido && !visible.inicio_hero);
+  }, { threshold: 0.05 });
+  $(".hero").id = "inicio_hero";
+  io.observe($("#pedido")); io.observe($(".hero"));
+}
+
+/* ------------ Início ------------ */
+var savedC = store("country"), savedL = store("lang");
+if (savedC && CONFIG.countries[savedC]) S.country = savedC;
+else {
+  var nav = (navigator.language || "pt-BR").toUpperCase(), reg = nav.split("-")[1];
+  if (reg && CONFIG.countries[reg]) S.country = reg; else if (/^ES/.test(nav)) S.country = "XX";
+}
+S.lang = (savedL === "pt" || savedL === "es") ? savedL : C().lang;
+renderCountry();
+applyLang();
+showStep();
+})();
+</script>
+
+</body>
+</html>
