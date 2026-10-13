@@ -388,6 +388,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 70px; }
 
         <!-- 4 plano -->
         <div class="panel" data-step="3" hidden>
+          <p class="calc-note" id="sculptNote" hidden></p>
           <div class="plans" id="wizPlans"></div>
           <div class="panel-foot"><button type="button" class="btn" data-prev data-t="back">Voltar</button><button type="button" class="btn primary" data-next data-t="next">Continuar</button></div>
         </div>
@@ -554,7 +555,7 @@ pt: {
   t_mug: "Caneca", t_vase: "Vaso", t_bowl: "Tigela", t_plate: "Prato", t_cuia: "Cuia / mate", t_diffuser: "Difusor", t_sculpt: "Escultura / figura", t_other: "Outro",
   f_m_p: "se tiver", e_type: "Escolha o tipo de peça.", e_dims: "Informe a altura e a largura (ou diâmetro) da sua peça.",
   q_back: "A peça aparece bem mais escura que o fundo e os detalhes podem sumir. Ilumine a peça de frente, com a janela atrás de você.",
-  c_sculpt: "Escultura com contrassaídas", c_sculpt_d: "Formas orgânicas (mãos, figuras) pedem molde de 4 a 8 partes ou ajustes no modelo, como preencher vãos ou separar dedos. O valor final sai depois da revisão.", parts_tbd: "4 a 8",
+  c_sculpt: "Escultura com contrassaídas", c_sculpt_d: "Formas orgânicas (mãos, figuras) pedem molde de 4 a 8 partes ou ajustes no modelo, como preencher vãos ou separar dedos. O valor final sai depois da revisão.", parts_tbd: "4 a 8", mouth: "boca", from: "a partir de", sculpt_price: "Escultura: valor final confirmado depois da revisão, antes de qualquer cobrança.",
   f_h: "Altura final", f_d: "Largura / diâmetro máx.", f_m: "Diâmetro da boca", f_c: "Contração da sua argila", f_c_s: "Grês costuma ficar entre 10 e 13%.",
   f_bed: "Mesa da sua impressora", bed_none: "Não tenho impressora", f_handle: "Tem alça ou asa?", yes: "Sim", no: "Não",
   f_notes: "Observações", f_notes_p: "Ex.: quero a borda um pouco mais grossa, tirar o relevo da marca…",
@@ -589,7 +590,7 @@ pt: {
   conf_t: "Pedido recebido", conf_d: "Guarde o código. Para agilizar, mande a mensagem abaixo com as fotos pelo WhatsApp.",
   copy: "Copiar mensagem", copied: "Mensagem copiada", copy_fail: "Não deu para copiar. Selecione o texto manualmente.",
   open_wa: "Abrir WhatsApp", new_order: "Fazer outro pedido", see_orders: "Ver meus pedidos",
-  wa_msg: "Olá! Acabei de fazer o pedido {code} no Molde.\nPeça: {type}, {h} × Ø {d} cm (boca Ø {m} cm), contração {c}%.\nPlano: {plan} — {price}\nPagamento: {pay}\nPré-análise: {verdict}\nNome: {name}\nVou enviar as fotos aqui.",
+  wa_msg: "Olá! Acabei de fazer o pedido {code} no Molde.\nPeça: {type}, {dims}, contração {c}%.\nPlano: {plan} — {price}\nPagamento: {pay}\nPré-análise: {verdict}\nNome: {name}\nVou enviar as fotos aqui.",
   tl_eyebrow: "Calculadoras grátis", tl_h2: "Contas de ateliê, sem planilha.",
   tc_t: "Contração da argila", tc_d: "Quanto maior o modelo precisa ser para a peça sair do forno no tamanho certo.", tc_final: "Medida final", tc_out: "Medida do modelo",
   tg_t: "Gesso para o molde", tg_d: "Proporção 100 : 70 (gesso : água), consistência usual para colagem.", tg_w: "Largura", tg_l: "Compr.", tg_h: "Altura", tg_v: "Volume da peça (desconta do total)", tg_plaster: "Gesso", tg_water: "Água",
@@ -639,7 +640,7 @@ es: {
   t_mug: "Taza", t_vase: "Jarrón", t_bowl: "Bowl", t_plate: "Plato", t_cuia: "Mate", t_diffuser: "Difusor", t_sculpt: "Escultura / figura", t_other: "Otro",
   f_m_p: "si tiene", e_type: "Elegí el tipo de pieza.", e_dims: "Ingresá la altura y el ancho (o diámetro) de tu pieza.",
   q_back: "La pieza se ve mucho más oscura que el fondo y los detalles pueden perderse. Iluminá la pieza de frente, con la ventana detrás tuyo.",
-  c_sculpt: "Escultura con contrasalidas", c_sculpt_d: "Las formas orgánicas (manos, figuras) piden un molde de 4 a 8 partes o ajustes en el modelo, como rellenar huecos o separar dedos. El precio final sale después de la revisión.", parts_tbd: "4 a 8",
+  c_sculpt: "Escultura con contrasalidas", c_sculpt_d: "Las formas orgánicas (manos, figuras) piden un molde de 4 a 8 partes o ajustes en el modelo, como rellenar huecos o separar dedos. El precio final sale después de la revisión.", parts_tbd: "4 a 8", mouth: "boca", from: "desde", sculpt_price: "Escultura: el precio final se confirma después de la revisión, antes de cobrar.",
   f_h: "Altura final", f_d: "Ancho / diámetro máx.", f_m: "Diámetro de la boca", f_c: "Contracción de tu arcilla", f_c_s: "El gres suele estar entre 10 y 13%.",
   f_bed: "Cama de tu impresora", bed_none: "No tengo impresora", f_handle: "¿Tiene asa?", yes: "Sí", no: "No",
   f_notes: "Observaciones", f_notes_p: "Ej.: quiero el borde un poco más grueso, quitar el relieve de la marca…",
@@ -674,7 +675,7 @@ es: {
   conf_t: "Pedido recibido", conf_d: "Guardá el código. Para agilizar, mandá el mensaje de abajo con las fotos por WhatsApp.",
   copy: "Copiar mensaje", copied: "Mensaje copiado", copy_fail: "No se pudo copiar. Seleccioná el texto a mano.",
   open_wa: "Abrir WhatsApp", new_order: "Hacer otro pedido", see_orders: "Ver mis pedidos",
-  wa_msg: "¡Hola! Acabo de hacer el pedido {code} en Molde.\nPieza: {type}, {h} × Ø {d} cm (boca Ø {m} cm), contracción {c}%.\nPlan: {plan} — {price}\nPago: {pay}\nAnálisis previo: {verdict}\nNombre: {name}\nTe mando las fotos por acá.",
+  wa_msg: "¡Hola! Acabo de hacer el pedido {code} en Molde.\nPieza: {type}, {dims}, contracción {c}%.\nPlan: {plan} — {price}\nPago: {pay}\nAnálisis previo: {verdict}\nNombre: {name}\nTe mando las fotos por acá.",
   tl_eyebrow: "Calculadoras gratis", tl_h2: "Cuentas de taller, sin planilla.",
   tc_t: "Contracción de la arcilla", tc_d: "Cuánto más grande tiene que ser el modelo para que la pieza salga del horno con la medida justa.", tc_final: "Medida final", tc_out: "Medida del modelo",
   tg_t: "Yeso para el molde", tg_d: "Proporción 100 : 70 (yeso : agua), consistencia habitual para colada.", tg_w: "Ancho", tg_l: "Largo", tg_h: "Alto", tg_v: "Volumen de la pieza (se descuenta)", tg_plaster: "Yeso", tg_water: "Agua",
@@ -884,11 +885,11 @@ function renderResult() {
 function planCard(kind, pickable) {
   var c = C(), price = kind === "piece" ? c.piece : c.matrix, name = t(kind === "piece" ? "p_piece" : "p_matrix");
   var items = t(kind === "piece" ? "p_piece_i" : "p_matrix_i");
-  var sel = pickable && S.plan === kind;
+  var sel = pickable && S.plan === kind, sc = pickable && S.type === "sculpt";
   var pix = c.pixOff ? '<p class="alt-pay">' + esc(t("pix", { p: money(Math.round(price * (1 - c.pixOff / 100))), o: c.pixOff })) + '</p>' : "";
   return '<div class="plan' + (kind === "matrix" ? " feat" : "") + (pickable ? " pick" : "") + (sel ? " sel" : "") + '" data-plan="' + kind + '"' + (pickable ? ' role="radio" tabindex="0" aria-checked="' + sel + '"' : "") + '>' +
     (kind === "matrix" ? '<span class="badge">' + esc(t("popular")) + '</span>' : "") +
-    '<h3>' + esc(name) + '</h3><p class="price"><small>' + esc(c.cur) + '</small>' + esc(new Intl.NumberFormat(c.loc).format(price)) + '</p>' + pix +
+    '<h3>' + esc(name) + '</h3>' + (sc ? '<p class="muted" style="font-size:.85rem;margin-bottom:-10px">' + esc(t("from")) + '</p>' : '') + '<p class="price"><small>' + esc(c.cur) + '</small>' + esc(new Intl.NumberFormat(c.loc).format(price)) + '</p>' + pix +
     '<p class="muted">' + esc(t(kind === "piece" ? "p_piece_d" : "p_matrix_d")) + '</p><ul>' + items.map(function (i) { return "<li><span>" + esc(i) + "</span></li>"; }).join("") + '</ul>' +
     (pickable ? '<span class="btn small' + (sel ? " primary" : "") + '" aria-hidden="true">' + esc(sel ? t("chosen") : t("choose", { p: name })) + '</span>'
               : '<a class="btn small' + (kind === "matrix" ? " primary" : "") + '" href="#pedido" data-pick="' + kind + '">' + esc(t("choose", { p: name })) + '</a>') +
@@ -903,6 +904,7 @@ function renderPlans() {
   renderWizPlans();
 }
 function renderWizPlans() {
+  $("#sculptNote").hidden = S.type !== "sculpt"; $("#sculptNote").textContent = t("sculpt_price");
   $("#wizPlans").innerHTML = planCard("piece", true) + planCard("matrix", true);
   $$("#wizPlans .plan").forEach(function (el) {
     function pick() { S.plan = el.getAttribute("data-plan"); renderWizPlans(); renderSummary(); }
@@ -919,6 +921,10 @@ function renderPays() {
   }).join("");
   $$("#pays input").forEach(function (r) { r.addEventListener("change", function () { S.pay = r.value; renderSummary(); }); });
 }
+function dims(h, d, m) {
+  return num(h) + " × " + num(d) + " cm" + (m ? " (" + t("mouth") + " " + num(m) + " cm)" : "");
+}
+function fromPrefix(type) { return type === "sculpt" ? t("from") + " " : ""; }
 function orderPrice() {
   var c = C(), price = S.plan === "piece" ? c.piece : c.matrix;
   if (c.pixOff && S.pay === "Pix") price = Math.round(price * (1 - c.pixOff / 100));
@@ -927,10 +933,10 @@ function orderPrice() {
 function renderSummary() {
   var c = C();
   var rows = [
-    [t("sum_piece"), t("t_" + S.type) + " · " + num(val("#h")) + " × Ø " + num(val("#d")) + " cm"],
+    [t("sum_piece"), t("t_" + S.type) + " · " + dims(val("#h"), val("#d"), val("#m"))],
     [t("sum_plan"), t(S.plan === "piece" ? "p_piece" : "p_matrix")],
     [t("sum_pay"), S.pay || "—"],
-    [t("sum_total"), money(orderPrice(), c)]
+    [t("sum_total"), fromPrefix(S.type) + money(orderPrice(), c)]
   ];
   $("#summary").innerHTML = rows.map(function (r) { return "<div><span>" + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span></div>"; }).join("");
 }
@@ -944,6 +950,7 @@ function go(n) {
     if (pe) { S.step = 1; showStep(); return; }
     renderResult();
   }
+  if (n === 3) renderWizPlans();
   if (n === 4) { renderPays(); renderSummary(); }
   S.step = n; S.maxStep = Math.max(S.maxStep, n);
   showStep();
@@ -980,7 +987,7 @@ function submitOrder(e) {
   var list = store("orders") || []; list.unshift(order); store("orders", list);
   var text = t("wa_msg", {
     code: order.code, type: t("t_" + order.type), h: num(order.h), d: num(order.d), m: num(order.m), c: num(order.c),
-    plan: t(order.plan === "piece" ? "p_piece" : "p_matrix"), price: money(order.price), pay: order.pay, verdict: verdict, name: name
+    plan: t(order.plan === "piece" ? "p_piece" : "p_matrix"), price: fromPrefix(order.type) + money(order.price), pay: order.pay, dims: dims(order.h, order.d, order.m), verdict: verdict, name: name
   });
   if (order.notes) text += "\n\n" + order.notes;
   var waUrl = "https://wa.me/" + (CONFIG.whatsapp || "") + "?text=" + encodeURIComponent(text);
@@ -1016,8 +1023,8 @@ function renderOrders() {
     var c = CONFIG.countries[o.country] || C();
     var dt = new Date(o.date).toLocaleDateString(S.lang === "pt" ? "pt-BR" : "es-AR", { day: "2-digit", month: "short", year: "numeric" });
     return '<article class="order"><header><div><b class="mono">' + esc(o.code) + '</b>' + (o.example ? '<span class="ex">' + esc(t("example")) + '</span>' : "") +
-      '<div class="muted" style="font-size:.88rem">' + esc(t("t_" + o.type)) + ' · ' + num(o.h) + ' × Ø ' + num(o.d) + ' cm · ' + esc(t(o.plan === "piece" ? "p_piece" : "p_matrix")) + '</div></div>' +
-      '<div style="text-align:right"><b>' + esc(money(o.price, c)) + '</b><div class="muted" style="font-size:.82rem">' + esc(dt) + ' · ' + esc(o.pay) + '</div></div></header>' +
+      '<div class="muted" style="font-size:.88rem">' + esc(t("t_" + o.type)) + ' · ' + esc(dims(o.h, o.d)) + ' · ' + esc(t(o.plan === "piece" ? "p_piece" : "p_matrix")) + '</div></div>' +
+      '<div style="margin-left:auto;text-align:right"><b>' + esc(fromPrefix(o.type) + money(o.price, c)) + '</b><div class="muted" style="font-size:.82rem">' + esc(dt) + ' · ' + esc(o.pay) + '</div></div></header>' +
       '<div class="track">' + STATUSES.map(function (s, i) { return '<div class="' + (i <= o.status ? "on" : "") + '">' + esc(t(s)) + '</div>'; }).join("") + '</div></article>';
   }).join("");
   $("#orders").innerHTML = html;
