@@ -157,6 +157,8 @@ textarea { min-height: 84px; resize: vertical; }
 .verdict.ok { background: var(--ok-soft); }
 .verdict.warn { background: var(--warn-soft); }
 .verdict.review { background: var(--bad-soft); }
+.verdict.has-img { grid-template-columns: 96px 1fr; align-items: center; column-gap: 16px; }
+.verdict.has-img img { width: 96px; height: 120px; object-fit: cover; border-radius: 8px; grid-row: span 3; }
 .verdict .st { font: 700 .78rem var(--f-mono); letter-spacing: .1em; text-transform: uppercase; }
 .verdict.ok .st { color: var(--ok); } .verdict.warn .st { color: var(--warn); } .verdict.review .st { color: var(--bad); }
 .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
@@ -360,16 +362,17 @@ html { scroll-behavior: smooth; scroll-padding-top: 70px; }
             <div class="chips" id="types"></div>
           </div>
           <div class="grid3">
-            <label class="f"><span data-t="f_h">Altura final</span><div class="unit"><input type="number" id="h" min="1" step="0.1" value="9.5" inputmode="decimal"><span>cm</span></div></label>
-            <label class="f"><span data-t="f_d">Diâmetro máximo</span><div class="unit"><input type="number" id="d" min="1" step="0.1" value="8.2" inputmode="decimal"><span>cm</span></div></label>
-            <label class="f"><span data-t="f_m">Diâmetro da boca</span><div class="unit"><input type="number" id="m" min="0.5" step="0.1" value="8" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="f_h">Altura final</span><div class="unit"><input type="number" id="h" min="1" step="0.1" placeholder="ex.: 16" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="f_d">Diâmetro máximo</span><div class="unit"><input type="number" id="d" min="1" step="0.1" placeholder="ex.: 10" inputmode="decimal"><span>cm</span></div></label>
+            <label class="f"><span data-t="f_m">Diâmetro da boca</span><div class="unit"><input type="number" id="m" min="0.5" step="0.1" data-tp="f_m_p" placeholder="se tiver" inputmode="decimal"><span>cm</span></div></label>
           </div>
           <div class="grid3">
             <label class="f"><span data-t="f_c">Contração da sua argila</span><div class="unit"><input type="number" id="c" min="0" max="25" step="0.5" value="12" inputmode="decimal"><span>%</span></div><small data-t="f_c_s">Grês costuma ficar entre 10 e 13%.</small></label>
             <label class="f"><span data-t="f_bed">Mesa da sua impressora</span><select class="in" id="bed"><option value="220">220 × 220 mm</option><option value="256" selected>256 × 256 mm</option><option value="300">300 × 300 mm</option><option value="350">350 × 350 mm</option><option value="0" data-t="bed_none">Não tenho impressora</option></select></label>
-            <label class="f"><span data-t="f_handle">Tem alça ou asa?</span><select class="in" id="handle"><option value="1" data-t="yes">Sim</option><option value="0" data-t="no">Não</option></select></label>
+            <label class="f"><span data-t="f_handle">Tem alça ou asa?</span><select class="in" id="handle"><option value="0" data-t="no">Não</option><option value="1" data-t="yes">Sim</option></select></label>
           </div>
           <div class="calc-note" id="scaleNote" aria-live="polite"></div>
+          <p class="err" id="pieceErr" aria-live="assertive"></p>
           <label class="f"><span data-t="f_notes">Observações</span><textarea id="notes" data-tp="f_notes_p" placeholder="Ex.: quero a borda um pouco mais grossa, tirar o relevo da marca…"></textarea></label>
           <div class="panel-foot"><button type="button" class="btn" data-prev data-t="back">Voltar</button><button type="button" class="btn primary" data-next data-t="check">Verificar viabilidade</button></div>
         </div>
@@ -520,7 +523,7 @@ var CONFIG = {
   baseMm: 25       // fundo do molde
 };
 
-var TYPES = ["mug", "vase", "bowl", "plate", "cuia", "diffuser", "other"];
+var TYPES = ["mug", "vase", "bowl", "plate", "cuia", "diffuser", "sculpt", "other"];
 var STATUSES = ["st_recv", "st_anal", "st_pay", "st_model", "st_done"];
 
 /* ------------ Textos ------------ */
@@ -548,8 +551,11 @@ pt: {
   q_light_ok: "Iluminação adequada", q_dark: "Foto escura. Aproxime de uma janela ou acenda uma luz.", q_bright: "Foto estourada. Evite luz direta sobre a peça.",
   q_con_ok: "Bom contraste com o fundo", q_con_low: "Pouco contraste. Use um fundo de cor diferente da peça.",
   type_q: "Que tipo de peça é?",
-  t_mug: "Caneca", t_vase: "Vaso", t_bowl: "Tigela", t_plate: "Prato", t_cuia: "Cuia / mate", t_diffuser: "Difusor", t_other: "Outro",
-  f_h: "Altura final", f_d: "Diâmetro máximo", f_m: "Diâmetro da boca", f_c: "Contração da sua argila", f_c_s: "Grês costuma ficar entre 10 e 13%.",
+  t_mug: "Caneca", t_vase: "Vaso", t_bowl: "Tigela", t_plate: "Prato", t_cuia: "Cuia / mate", t_diffuser: "Difusor", t_sculpt: "Escultura / figura", t_other: "Outro",
+  f_m_p: "se tiver", e_type: "Escolha o tipo de peça.", e_dims: "Informe a altura e a largura (ou diâmetro) da sua peça.",
+  q_back: "A peça aparece bem mais escura que o fundo e os detalhes podem sumir. Ilumine a peça de frente, com a janela atrás de você.",
+  c_sculpt: "Escultura com contrassaídas", c_sculpt_d: "Formas orgânicas (mãos, figuras) pedem molde de 4 a 8 partes ou ajustes no modelo, como preencher vãos ou separar dedos. O valor final sai depois da revisão.", parts_tbd: "4 a 8",
+  f_h: "Altura final", f_d: "Largura / diâmetro máx.", f_m: "Diâmetro da boca", f_c: "Contração da sua argila", f_c_s: "Grês costuma ficar entre 10 e 13%.",
   f_bed: "Mesa da sua impressora", bed_none: "Não tenho impressora", f_handle: "Tem alça ou asa?", yes: "Sim", no: "Não",
   f_notes: "Observações", f_notes_p: "Ex.: quero a borda um pouco mais grossa, tirar o relevo da marca…",
   scale_note: "Modelo a imprimir: {h} mm de altura × Ø {d} mm  (peça final ÷ (1 − {c}%))",
@@ -630,8 +636,11 @@ es: {
   q_light_ok: "Iluminación adecuada", q_dark: "Foto oscura. Acercate a una ventana o prendé una luz.", q_bright: "Foto sobreexpuesta. Evitá luz directa sobre la pieza.",
   q_con_ok: "Buen contraste con el fondo", q_con_low: "Poco contraste. Usá un fondo de otro color que la pieza.",
   type_q: "¿Qué tipo de pieza es?",
-  t_mug: "Taza", t_vase: "Jarrón", t_bowl: "Bowl", t_plate: "Plato", t_cuia: "Mate", t_diffuser: "Difusor", t_other: "Otro",
-  f_h: "Altura final", f_d: "Diámetro máximo", f_m: "Diámetro de la boca", f_c: "Contracción de tu arcilla", f_c_s: "El gres suele estar entre 10 y 13%.",
+  t_mug: "Taza", t_vase: "Jarrón", t_bowl: "Bowl", t_plate: "Plato", t_cuia: "Mate", t_diffuser: "Difusor", t_sculpt: "Escultura / figura", t_other: "Otro",
+  f_m_p: "si tiene", e_type: "Elegí el tipo de pieza.", e_dims: "Ingresá la altura y el ancho (o diámetro) de tu pieza.",
+  q_back: "La pieza se ve mucho más oscura que el fondo y los detalles pueden perderse. Iluminá la pieza de frente, con la ventana detrás tuyo.",
+  c_sculpt: "Escultura con contrasalidas", c_sculpt_d: "Las formas orgánicas (manos, figuras) piden un molde de 4 a 8 partes o ajustes en el modelo, como rellenar huecos o separar dedos. El precio final sale después de la revisión.", parts_tbd: "4 a 8",
+  f_h: "Altura final", f_d: "Ancho / diámetro máx.", f_m: "Diámetro de la boca", f_c: "Contracción de tu arcilla", f_c_s: "El gres suele estar entre 10 y 13%.",
   f_bed: "Cama de tu impresora", bed_none: "No tengo impresora", f_handle: "¿Tiene asa?", yes: "Sí", no: "No",
   f_notes: "Observaciones", f_notes_p: "Ej.: quiero el borde un poco más grueso, quitar el relieve de la marca…",
   scale_note: "Modelo a imprimir: {h} mm de altura × Ø {d} mm  (pieza final ÷ (1 − {c}%))",
@@ -695,7 +704,7 @@ es: {
 var S = {
   lang: "pt", country: "BR", step: 0, maxStep: 0,
   photos: [null, null, null],   // {url, w, h, mean, std}
-  type: "mug", plan: "matrix", pay: null, result: null
+  type: null, plan: "matrix", pay: null, result: null
 };
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -763,9 +772,16 @@ function loadPhoto(file, i) {
     var cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
     var ctx = cv.getContext("2d"); ctx.drawImage(img, 0, 0, cw, ch);
     var d = ctx.getImageData(0, 0, cw, ch).data, sum = 0, sq = 0, n = d.length / 4;
-    for (var j = 0; j < d.length; j += 4) { var y = 0.2126 * d[j] + 0.7152 * d[j + 1] + 0.0722 * d[j + 2]; sum += y; sq += y * y; }
+    var cs = 0, cn = 0, es = 0, en = 0;
+    for (var j = 0; j < d.length; j += 4) {
+      var y = 0.2126 * d[j] + 0.7152 * d[j + 1] + 0.0722 * d[j + 2]; sum += y; sq += y * y;
+      var px = (j / 4) % cw / cw, py = Math.floor(j / 4 / cw) / ch;
+      if (px > .3 && px < .7 && py > .3 && py < .7) { cs += y; cn++; }        // centro (onde costuma estar a peça)
+      else if (px < .12 || px > .88 || py < .12) { es += y; en++; }          // bordas e topo (fundo)
+    }
     var mean = sum / n, std = Math.sqrt(Math.max(0, sq / n - mean * mean));
-    S.photos[i] = { url: url, w: img.naturalWidth, h: img.naturalHeight, mean: mean, std: std, name: file.name };
+    var back = (en && cn) ? es / en - cs / cn : 0;
+    S.photos[i] = { url: url, w: img.naturalWidth, h: img.naturalHeight, mean: mean, std: std, back: back, name: file.name };
     renderSlots(); renderPhotoQ();
   };
   img.onerror = function () { URL.revokeObjectURL(url); };
@@ -777,6 +793,7 @@ function photoIssues() {
   var minSide = Math.min(p.w, p.h);
   out.push(minSide < 700 ? { s: "warn", m: t("q_res_low", { w: p.w, h: p.h }) } : { s: "ok", m: t("q_res_ok") });
   out.push(p.mean < 55 ? { s: "warn", m: t("q_dark") } : p.mean > 225 ? { s: "warn", m: t("q_bright") } : { s: "ok", m: t("q_light_ok") });
+  if (p.back > 50) out.push({ s: "warn", m: t("q_back") });
   out.push(p.std < 28 ? { s: "warn", m: t("q_con_low") } : { s: "ok", m: t("q_con_ok") });
   return out;
 }
@@ -793,17 +810,13 @@ function renderTypes() {
   $("#types").innerHTML = TYPES.map(function (k) {
     return '<label class="chip"><input type="radio" name="type" value="' + k + '"' + (S.type === k ? " checked" : "") + '><span>' + esc(t("t_" + k)) + '</span></label>';
   }).join("");
-  $$("#types input").forEach(function (r) { r.addEventListener("change", function () { S.type = r.value; presetForType(); renderScale(); }); });
-}
-function presetForType() {
-  var presets = { mug: [9.5, 8.2, 8, 1], vase: [22, 13, 6, 0], bowl: [7, 15, 15, 0], plate: [2.5, 26, 26, 0], cuia: [9, 8.5, 4, 0], diffuser: [12, 8, 2.5, 0], other: [10, 10, 8, 0] };
-  var p = presets[S.type]; if (!p) return;
-  $("#h").value = p[0]; $("#d").value = p[1]; $("#m").value = p[2]; $("#handle").value = String(p[3]);
+  $$("#types input").forEach(function (r) { r.addEventListener("change", function () { S.type = r.value; $("#pieceErr").textContent = ""; renderScale(); if (S.maxStep >= 2) renderResult(); }); });
 }
 function scaled() {
   var c = Math.min(30, Math.max(0, val("#c"))) / 100;
   var f = 1 / (1 - c);
-  return { h: val("#h") * 10 * f, d: val("#d") * 10 * f, m: val("#m") * 10 * f, c: c * 100, f: f };
+  var m = val("#m") || val("#d");
+  return { h: val("#h") * 10 * f, d: val("#d") * 10 * f, m: m * 10 * f, c: c * 100, f: f };
 }
 function renderScale() {
   var s = scaled();
@@ -812,7 +825,7 @@ function renderScale() {
 
 /* ------------ Viabilidade ------------ */
 function evaluate() {
-  var s = scaled(), H = val("#h"), D = val("#d"), M = val("#m");
+  var s = scaled(), H = val("#h"), D = val("#d"), M = val("#m") || D;
   var handle = $("#handle").value === "1", bed = parseInt($("#bed").value, 10);
   var checks = [], level = 0; // 0 ok, 1 warn, 2 review
   function add(st, title, desc) { checks.push({ s: st, t: title, d: desc }); if (st === "warn") level = Math.max(level, 1); if (st === "bad") level = 2; }
@@ -823,7 +836,8 @@ function evaluate() {
   add(pw.length ? "warn" : "ok", pw.length ? t("c_photo_warn") : t("c_photo_ok"), (pw.map(function (x) { return x.m; }).join(" ") + extra).trim());
 
   var parts;
-  if (S.type === "plate" || H < D * 0.3) { parts = 1; add("ok", t("c_parts1"), t("c_parts1_d")); }
+  if (S.type === "sculpt") { parts = t("parts_tbd"); add("bad", t("c_sculpt"), t("c_sculpt_d")); }
+  else if (S.type === "plate" || H < D * 0.3) { parts = 1; add("ok", t("c_parts1"), t("c_parts1_d")); }
   else if (M < D * 0.85) { parts = 3; add("warn", t("c_parts3"), t("c_parts3_d")); }
   else { parts = 2; add("ok", t("c_parts2"), t("c_parts2_d")); }
   if (handle) add("warn", t("c_handle"), t("c_handle_d"));
@@ -853,9 +867,10 @@ function evaluate() {
 function renderResult() {
   var r = evaluate();
   var v = [["ok", "v_ok"], ["warn", "v_warn"], ["review", "v_rev"]][r.level];
-  $("#verdict").innerHTML = '<div class="verdict ' + v[0] + '"><span class="st">' + esc(t(v[1])) + '</span><h3>' + esc(t("t_" + S.type)) + ' · ' + num(val("#h")) + ' × Ø ' + num(val("#d")) + ' cm</h3><p>' + esc(t(v[1] + "_d")) + '</p></div>';
+  var ph = S.photos[0];
+  $("#verdict").innerHTML = '<div class="verdict ' + v[0] + (ph ? ' has-img' : '') + '">' + (ph ? '<img alt="" src="' + ph.url + '">' : '') + '<span class="st">' + esc(t(v[1])) + '</span><h3>' + esc(t("t_" + S.type)) + ' · ' + num(val("#h")) + ' × ' + num(val("#d")) + ' cm</h3><p>' + esc(t(v[1] + "_d")) + '</p></div>';
   $("#figs").innerHTML = [
-    [t("fig_model"), num(r.s.h, 0) + " × Ø" + num(r.s.d, 0) + " mm"],
+    [t("fig_model"), num(r.s.h, 0) + " × " + num(r.s.d, 0) + " mm"],
     [t("fig_parts"), r.parts + (r.parts === 1 ? " + 1" : "")],
     [t("fig_box"), r.boxW + " × " + r.boxH + " mm"],
     [t("fig_plaster"), num(r.plaster) + " kg"]
@@ -923,7 +938,12 @@ function renderSummary() {
 /* ------------ Wizard ------------ */
 function go(n) {
   if (n > 0 && !S.photos[0]) { S.step = 0; showStep(); toast(t("need_photo")); return; }
-  if (n >= 2) renderResult();
+  if (n >= 2) {
+    var pe = !S.type ? t("e_type") : (val("#h") <= 0 || val("#d") <= 0) ? t("e_dims") : "";
+    $("#pieceErr").textContent = pe;
+    if (pe) { S.step = 1; showStep(); return; }
+    renderResult();
+  }
   if (n === 4) { renderPays(); renderSummary(); }
   S.step = n; S.maxStep = Math.max(S.maxStep, n);
   showStep();
