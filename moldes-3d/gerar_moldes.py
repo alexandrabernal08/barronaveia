@@ -333,7 +333,8 @@ def presilha(p: Params) -> Manifold:
 # --------------------------------------------------------------------------
 def para_trimesh(m: Manifold) -> trimesh.Trimesh:
     mesh = m.to_mesh()
-    tm = trimesh.Trimesh(np.asarray(mesh.vert_properties)[:, :3], np.asarray(mesh.tri_verts))
+    # process=False: mantém a topologia exata do manifold (não funde vértices quase iguais)
+    tm = trimesh.Trimesh(np.asarray(mesh.vert_properties)[:, :3], np.asarray(mesh.tri_verts), process=False)
     tm.apply_translation((0, 0, -tm.bounds[0][2]))  # apoia na mesa (z=0)
     return tm
 

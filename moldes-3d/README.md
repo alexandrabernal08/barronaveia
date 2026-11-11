@@ -1,16 +1,120 @@
-# Moldes 3D para gesso: prato flor
+# Moldes 3D para gesso
 
-Matrizes impressas em 3D para fazer moldes de gesso de um prato em forma de flor. São dois tipos de molde, os dois gerados a partir do mesmo prato:
+Matrizes impressas em 3D para fazer moldes de gesso para cerâmica:
 
-| | **Molde de colagem (barbotina)** | **Molde de prensagem (placa)** |
-|---|---|---|
-| Como se usa | despeja-se barbotina, espera formar a parede e escorre-se o excesso | aperta-se uma placa de argila entre duas peças |
-| Peças de gesso | 1 | 2 (fêmea + macho) |
-| Pasta | `stl/barbotina/` | `stl/prensagem/` |
+| | **Copo (barbotina)** | **Prato flor (barbotina)** | **Prato flor (prensagem)** |
+|---|---|---|---|
+| Como se usa | despeja-se barbotina, espera formar a parede e escorre-se o excesso | igual ao copo | aperta-se uma placa de argila entre duas peças |
+| Peças de gesso | 2 metades | 1 | 2 (fêmea + macho) |
+| Pasta | `stl/copo/` | `stl/barbotina/` | `stl/prensagem/` |
+| Gerador | `gerar_copo.py` | `gerar_moldes.py` | `gerar_moldes.py` |
 
 ---
 
-# Molde de colagem (barbotina)
+# Molde de copo (barbotina, 2 partes)
+
+Copo bem arredondado embaixo, com um **pezinho em disco** no meio do fundo.
+
+| Medida (peça crua, como sai do molde) | |
+|---|---|
+| Altura (com o pé) | **14 cm** |
+| Boca (diâmetro externo) | **13 cm** |
+| Largura máxima (barriga, a 6 cm do apoio) | **14 cm** |
+| Pé | disco Ø 7 cm × **0,5 cm** de altura |
+
+![Corte do molde de copo](imagens/corte_copo.png)
+
+### Por que 2 partes?
+
+O copo é **mais largo na barriga (14 cm) do que na boca (13 cm)**. Num molde inteiriço, a peça ficaria presa e não passaria pela boca. Por isso o molde é dividido em **duas metades na vertical**, passando pelo eixo do copo. Cada metade sai de lado, e o pé em disco também solta assim.
+
+As duas metades encaixam por 4 chaves de registro (bolinhas numa metade, covinhas na outra). Juntas, formam um bloco de gesso de **19 × 19 × 19 cm**.
+
+## Peças (pasta `stl/copo/`)
+
+![Peças do molde de copo](imagens/copo.png)
+
+| Arquivo | Imprimir | O que é | Tamanho (mm) |
+|---|---|---|---|
+| `bandeja_A.stl` | 1x | Placa com **meio copo deitado** (com reservatório e degrau de corte), 4 **bolinhas** de registro e canal de ar. Gera a **metade A**. | 204 × 204 × 77 |
+| `bandeja_B.stl` | 1x | Igual, mas com **covinhas** no lugar das bolinhas. Gera a **metade B**. | 204 × 204 × 77 |
+| `moldura_U.stl` | **2x** | Metade da moldura que cerca a bandeja. Serve para as duas bandejas. | 218 × 99 × 99 |
+| `presilha.stl` | **4x** | Trava as duas metades da moldura, 2 por emenda. | 14 × 13 × 20 |
+| `pino_desmolde.stl` | **2x** | Tampa o canal de ar enquanto o gesso está líquido. | Ø 18 × 68 |
+
+![Bandeja A](imagens/copo_bandeja.png)
+
+**Impressão:**
+- A bandeja vai com a placa na mesa e o meio copo para cima, sem suportes.
+- Use camada de 0,12–0,16 mm e lixe bem o meio copo: a barbotina copia tudo.
+- A moldura em U tem 218 mm. Numa mesa de 220 × 220 mm, imprima na diagonal.
+- Passe uma broca de 4 mm no canal de ar.
+- O pino é mais longo (68 mm). Imprima-o em pé, devagar, com 100% de preenchimento. Também dá para usar uma **broca ou um prego de 4 mm** no lugar dele.
+
+## Fazendo as duas metades de gesso
+
+Faça uma metade de cada vez: primeiro com a `bandeja_A`, depois com a `bandeja_B`. A moldura é a mesma.
+
+1. **Pino:** encaixe o pino por baixo da bandeja, pelo bolso, até a ponta ficar rente à barriga do meio copo.
+2. **Moldura:** encaixe as duas metades em U em volta do degrau da placa e prenda com 2 presilhas em cada emenda.
+3. **Vedação:**
+   - Passe argila nas emendas por fora.
+   - Passe também argila na junção do meio copo com a parede da moldura, do lado do reservatório. Ali o meio copo encosta na parede.
+4. **Desmoldante:** passe em tudo (meio copo, placa, chaves e moldura). Use vaselina líquida diluída, sabão de potássio ou desmoldante para gesso.
+5. **Gesso:** use consistência 70 (70 de água para 100 de gesso). Para **cada metade**, são ~2,35 kg de gesso e ~1,65 L de água, com 10% de sobra.
+   1. Despeje pela lateral até a borda da moldura. Isso dá 95 mm de espessura e cobre a barriga com ~25 mm de gesso.
+   2. Dê batidinhas na mesa para subir as bolhas.
+   3. Espere o gesso esquentar e esfriar (30–60 min).
+6. **Desmolde:**
+   1. Tire as presilhas e a moldura.
+   2. Vire o conjunto e puxe o pino.
+   3. Injete ar ou água com a seringa no canal: a bandeja se solta do gesso.
+7. Chanfre as quinas externas.
+
+Depois de fazer as duas metades, deixe secar **7 dias** antes de colar.
+
+## Colando o copo
+
+1. **Monte o molde:** junte as duas metades, encaixando as chaves. Prenda com **elásticos largos** (câmara de pneu cortada) ou cinta com catraca. A boca do reservatório fica para cima.
+2. **Encha:** use barbotina de colagem (1,75–1,80 g/ml). Encha até o topo do reservatório e vá completando enquanto o nível baixa.
+3. **Espere a parede formar:** 10–25 min para 4–5 mm. Para conferir, raspe com a unha a barbotina na parede do reservatório.
+4. **Escorra:** vire o molde de boca para baixo, apoiado em duas ripas, por 10–15 min.
+5. **Corte:** quando o brilho sumir, corte a sobra do reservatório seguindo o degrau.
+6. **Abra:** quando o copo começar a se soltar, tire os elásticos e abra as metades **de lado**. Na barbotina, isso leva de 30 a 60 min.
+7. **Acabamento:** passe esponja úmida na **linha de emenda**, uma risquinha vertical dos dois lados e atravessando o fundo, e na borda cortada.
+
+## Medidas e retração
+
+As medidas acima são do copo **cru**, como ele sai do molde. Na queima, a barbotina retrai uns 12–15%, então o copo de 14 cm sai do forno com ~12 cm.
+
+Se você quer que o copo **queimado** tenha 14 / 13 / 14 cm, gere o molde maior. Por exemplo, com 12% de retração:
+
+```bash
+python3 gerar_copo.py --retracao 12 --preview
+```
+
+Isso gera um copo cru de ~15,9 cm. O bloco de gesso também cresce, e a bandeja e a moldura deixam de caber numa mesa de impressão de 220 mm.
+
+Outras medidas:
+
+```bash
+python3 gerar_copo.py --altura 120 --boca 110 --largura 125 --altura-barriga 50
+python3 gerar_copo.py --diametro-pe 60 --altura-pe 4
+python3 gerar_copo.py --help
+```
+
+| Parâmetro | Padrão | Para que serve |
+|---|---|---|
+| `--altura` / `--boca` / `--largura` | 140 / 130 / 140 | medidas do copo (mm) |
+| `--altura-barriga` | 60 | altura onde fica a parte mais larga. Mais baixo = fundo mais "redondinho". |
+| `--diametro-pe` / `--altura-pe` | 70 / 5 | pezinho em disco no fundo |
+| `--retracao` | 0 | % de retração. Use para o copo **queimado** ter as medidas pedidas. |
+| `--altura-reservatorio` | 25 | sobra acima da boca |
+| `--margem-gesso` | 25 | gesso mínimo em volta da barriga e embaixo do pé |
+
+---
+
+# Prato flor: molde de colagem (barbotina)
 
 ![Molde de colagem](imagens/barbotina.png)
 
@@ -114,7 +218,7 @@ O prato sai cru com **Ø 160 mm**. Com a retração da barbotina (12–15%), dev
 
 ---
 
-# Molde de prensagem (placa de argila)
+# Prato flor: molde de prensagem (placa de argila)
 
 ![Peças](imagens/pecas.png)
 
@@ -152,7 +256,7 @@ A fêmea fica embaixo e o macho desce dentro dela. Entre os dois sobra um vão d
 
 ---
 
-# Mudando tamanho e formato
+# Prato flor: mudando tamanho e formato
 
 Todos os arquivos, dos dois moldes, saem do script `gerar_moldes.py`:
 
