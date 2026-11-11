@@ -5,30 +5,24 @@ Matrizes impressas em 3D para fazer moldes de gesso para cerâmica:
 | | **Copo (barbotina)** | **Prato flor (barbotina)** | **Prato flor (prensagem)** |
 |---|---|---|---|
 | Como se usa | despeja-se barbotina, espera formar a parede e escorre-se o excesso | igual ao copo | aperta-se uma placa de argila entre duas peças |
-| Peças de gesso | 2 metades | 1 | 2 (fêmea + macho) |
+| Peças de gesso | 1 | 1 | 2 (fêmea + macho) |
 | Pasta | `stl/copo/` | `stl/barbotina/` | `stl/prensagem/` |
 | Gerador | `gerar_copo.py` | `gerar_moldes.py` | `gerar_moldes.py` |
 
 ---
 
-# Molde de copo (barbotina, 2 partes)
+# Molde de copo (barbotina, 1 peça)
 
-Copo bem arredondado embaixo, com um **pezinho em disco** no meio do fundo.
+Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **pé em anel** no fundo. A boca é a parte mais larga, então o copo sai do gesso por cima. O molde é **de uma peça só**, sem emenda na peça.
 
 | Medida (peça crua, como sai do molde) | |
 |---|---|
 | Altura (com o pé) | **14 cm** |
-| Boca (diâmetro externo) | **13 cm** |
-| Largura máxima (barriga, a 6 cm do apoio) | **14 cm** |
-| Pé | disco Ø 7 cm × **0,5 cm** de altura |
+| Boca (diâmetro externo, a parte mais larga) | **14 cm** |
+| Parede | abre 3° até a boca, o que ajuda a desmoldar |
+| Pé | **anel** com Ø 7 cm por fora, 6 mm de largura e **0,5 cm** de altura. O centro fica rebaixado. |
 
 ![Corte do molde de copo](imagens/corte_copo.png)
-
-### Por que 2 partes?
-
-O copo é **mais largo na barriga (14 cm) do que na boca (13 cm)**. Num molde inteiriço, a peça ficaria presa e não passaria pela boca. Por isso o molde é dividido em **duas metades na vertical**, passando pelo eixo do copo. Cada metade sai de lado, e o pé em disco também solta assim.
-
-As duas metades encaixam por 4 chaves de registro (bolinhas numa metade, covinhas na outra). Juntas, formam um bloco de gesso de **19 × 19 × 19 cm**.
 
 ## Peças (pasta `stl/copo/`)
 
@@ -36,81 +30,81 @@ As duas metades encaixam por 4 chaves de registro (bolinhas numa metade, covinha
 
 | Arquivo | Imprimir | O que é | Tamanho (mm) |
 |---|---|---|---|
-| `bandeja_A.stl` | 1x | Placa com **meio copo deitado** (com reservatório e degrau de corte), 4 **bolinhas** de registro e canal de ar. Gera a **metade A**. | 204 × 204 × 77 |
-| `bandeja_B.stl` | 1x | Igual, mas com **covinhas** no lugar das bolinhas. Gera a **metade B**. | 204 × 204 × 77 |
-| `moldura_U.stl` | **2x** | Metade da moldura que cerca a bandeja. Serve para as duas bandejas. | 218 × 99 × 99 |
-| `presilha.stl` | **4x** | Trava as duas metades da moldura, 2 por emenda. | 14 × 13 × 20 |
-| `pino_desmolde.stl` | **2x** | Tampa o canal de ar enquanto o gesso está líquido. | Ø 18 × 68 |
+| `matriz_copo.stl` | 1x | O **copo de cabeça para baixo** sobre uma aba. A aba tem degraus que formam o encaixe do anel, o **reservatório** e o **degrau de corte**. Por dentro a matriz é **oca**, com um tubo central para o pino e 3 nervuras. | 214 × 214 × 172 |
+| `anel_quarto.stl` | **4x** | 1/4 da parede de contenção (Ø interno 200 mm, 194 mm de altura). | 114 × 114 × 194 |
+| `presilha.stl` | **12x** | Trava os quartos do anel, 3 por emenda. | 14 × 13 × 20 |
+| `pino_desmolde.stl` | 2x | Pino Ø 6 mm que atravessa o tubo central e tampa o furo no fundo do copo. | Ø 20 × 166 |
 
-![Bandeja A](imagens/copo_bandeja.png)
+| Matriz | Matriz por baixo: tubo central, nervuras e pino |
+|---|---|
+| ![Matriz](imagens/copo_matriz.png) | ![Por baixo](imagens/copo_matriz_baixo.png) |
 
 **Impressão:**
-- A bandeja vai com a placa na mesa e o meio copo para cima, sem suportes.
-- Use camada de 0,12–0,16 mm e lixe bem o meio copo: a barbotina copia tudo.
-- A moldura em U tem 218 mm. Numa mesa de 220 × 220 mm, imprima na diagonal.
-- Passe uma broca de 4 mm no canal de ar.
-- O pino é mais longo (68 mm). Imprima-o em pé, devagar, com 100% de preenchimento. Também dá para usar uma **broca ou um prego de 4 mm** no lugar dele.
+- A matriz vai com a aba na mesa, sem suportes. Use camada de 0,12–0,16 mm e 3–4 perímetros. O preenchimento quase não importa, porque a matriz já é oca.
+- **Lixe bem** a parte do copo e passe primer e verniz: a barbotina copia tudo.
+- O anel tem 194 mm de altura. A impressora precisa ter pelo menos 200 mm de altura útil.
+- **Pino:** imprima em pé, com a cabeça na mesa, devagar e com 100% de preenchimento.
+- **Alternativa ao pino:** uma **cavilha de madeira de 6 mm** cortada com 163 mm, ou uma vareta de 6 mm. Outra opção é tampar o furo do fundo, por fora, com uma bolinha de massinha bem rente. Na hora de desmoldar, o ar da seringa empurra a massinha.
+- Passe uma broca de 6 mm no tubo central, de baixo para cima.
 
-## Fazendo as duas metades de gesso
+## Fazendo o molde de gesso
 
-Faça uma metade de cada vez: primeiro com a `bandeja_A`, depois com a `bandeja_B`. A moldura é a mesma.
-
-1. **Pino:** encaixe o pino por baixo da bandeja, pelo bolso, até a ponta ficar rente à barriga do meio copo.
-2. **Moldura:** encaixe as duas metades em U em volta do degrau da placa e prenda com 2 presilhas em cada emenda.
-3. **Vedação:**
-   - Passe argila nas emendas por fora.
-   - Passe também argila na junção do meio copo com a parede da moldura, do lado do reservatório. Ali o meio copo encosta na parede.
-4. **Desmoldante:** passe em tudo (meio copo, placa, chaves e moldura). Use vaselina líquida diluída, sabão de potássio ou desmoldante para gesso.
-5. **Gesso:** use consistência 70 (70 de água para 100 de gesso). Para **cada metade**, são ~2,35 kg de gesso e ~1,65 L de água, com 10% de sobra.
-   1. Despeje pela lateral até a borda da moldura. Isso dá 95 mm de espessura e cobre a barriga com ~25 mm de gesso.
-   2. Dê batidinhas na mesa para subir as bolhas.
-   3. Espere o gesso esquentar e esfriar (30–60 min).
+1. **Pino:** passe vaselina no pino e enfie-o por baixo, pelo tubo central, até a cabeça encostar. A ponta deve ficar rente ao centro do fundo do copo, dentro do anel do pé.
+2. **Base:** apoie a matriz na mesa com a aba para baixo.
+3. **Anel:** monte os 4 quartos do anel em volta do degrau da aba. O degrau **centraliza sozinho**. Prenda com 3 presilhas por emenda.
+4. **Vedação e desmoldante:** vede as emendas por fora com argila e passe desmoldante na matriz e no anel.
+5. **Gesso:** use consistência 70, com ~**3,8 kg de gesso** e ~**2,7 L de água**.
+   1. Despeje pela lateral, sem jogar direto no copo, até a borda do anel. Isso deixa ~25 mm de gesso acima do pé.
+   2. Bata na mesa para subir as bolhas.
 6. **Desmolde:**
-   1. Tire as presilhas e a moldura.
-   2. Vire o conjunto e puxe o pino.
-   3. Injete ar ou água com a seringa no canal: a bandeja se solta do gesso.
-7. Chanfre as quinas externas.
+   1. Espere o gesso esquentar e esfriar (30–60 min).
+   2. Tire as presilhas e o anel.
+   3. **Vire o bloco** com a matriz ainda dentro, para a aba ficar para cima.
+   4. Puxe o pino.
+   5. Encaixe uma **seringa de 60 ml de bico cateter** no tubo central e injete ar ou água. A matriz se solta.
+7. Chanfre as quinas e deixe o molde secar **7 dias**.
 
-Depois de fazer as duas metades, deixe secar **7 dias** antes de colar.
+O bloco pronto tem **Ø 20 cm × 19 cm**. A face que estava na aba vira a boca do molde, com o reservatório e o degrau de corte.
 
 ## Colando o copo
 
-1. **Monte o molde:** junte as duas metades, encaixando as chaves. Prenda com **elásticos largos** (câmara de pneu cortada) ou cinta com catraca. A boca do reservatório fica para cima.
-2. **Encha:** use barbotina de colagem (1,75–1,80 g/ml). Encha até o topo do reservatório e vá completando enquanto o nível baixa.
-3. **Espere a parede formar:** 10–25 min para 4–5 mm. Para conferir, raspe com a unha a barbotina na parede do reservatório.
-4. **Escorra:** vire o molde de boca para baixo, apoiado em duas ripas, por 10–15 min.
-5. **Corte:** quando o brilho sumir, corte a sobra do reservatório seguindo o degrau.
-6. **Abra:** quando o copo começar a se soltar, tire os elásticos e abra as metades **de lado**. Na barbotina, isso leva de 30 a 60 min.
-7. **Acabamento:** passe esponja úmida na **linha de emenda**, uma risquinha vertical dos dois lados e atravessando o fundo, e na borda cortada.
+1. **Encha:** com o molde seco e de boca para cima, encha de barbotina (1,75–1,80 g/ml) até o topo do reservatório. Vá completando enquanto o nível baixa.
+2. **Espere a parede formar:** 10–25 min para 4–5 mm. Para conferir, raspe com a unha a barbotina na parede do reservatório.
+3. **Escorra:** vire o molde de boca para baixo, apoiado em duas ripas, por 10–15 min.
+4. **Corte:** quando o brilho sumir, corte a sobra do reservatório seguindo o degrau.
+5. **Desenforme:** espere o copo se soltar sozinho, porque ele retrai e descola. Vire o molde sobre uma espuma.
+
+O anel do pé de 6 mm costuma encher quase maciço de barbotina. É normal.
 
 ## Medidas e retração
 
-As medidas acima são do copo **cru**, como ele sai do molde. Na queima, a barbotina retrai uns 12–15%, então o copo de 14 cm sai do forno com ~12 cm.
+As medidas são do copo **cru**. Na queima, a barbotina retrai uns 12–15%, então o copo sai do forno com ~12 cm.
 
-Se você quer que o copo **queimado** tenha 14 / 13 / 14 cm, gere o molde maior. Por exemplo, com 12% de retração:
+Para o copo **queimado** ter 14 cm, gere o molde maior. Nesse caso a matriz e o anel deixam de caber numa mesa de impressão de 220 mm.
 
 ```bash
 python3 gerar_copo.py --retracao 12 --preview
 ```
 
-Isso gera um copo cru de ~15,9 cm. O bloco de gesso também cresce, e a bandeja e a moldura deixam de caber numa mesa de impressão de 220 mm.
-
-Outras medidas:
+Outros formatos:
 
 ```bash
-python3 gerar_copo.py --altura 120 --boca 110 --largura 125 --altura-barriga 50
-python3 gerar_copo.py --diametro-pe 60 --altura-pe 4
+python3 gerar_copo.py --altura 120 --boca 120          # copo menor
+python3 gerar_copo.py --saida-parede 6                 # paredes mais abertas
+python3 gerar_copo.py --altura-curva 60                # fundo ainda mais arredondado
+python3 gerar_copo.py --diametro-pe 60 --altura-pe 4   # outro pé
 python3 gerar_copo.py --help
 ```
 
 | Parâmetro | Padrão | Para que serve |
 |---|---|---|
-| `--altura` / `--boca` / `--largura` | 140 / 130 / 140 | medidas do copo (mm) |
-| `--altura-barriga` | 60 | altura onde fica a parte mais larga. Mais baixo = fundo mais "redondinho". |
-| `--diametro-pe` / `--altura-pe` | 70 / 5 | pezinho em disco no fundo |
-| `--retracao` | 0 | % de retração. Use para o copo **queimado** ter as medidas pedidas. |
+| `--altura` / `--boca` | 140 / 140 | medidas do copo (mm) |
+| `--saida-parede` | 3° | quanto a parede abre até a boca. Mínimo de 2° para desmoldar. |
+| `--altura-curva` | 45 | até que altura vai a curva do fundo. Maior = fundo mais arredondado. |
+| `--diametro-pe` / `--largura-anel-pe` / `--altura-pe` | 70 / 6 / 5 | anel do pé |
+| `--retracao` | 0 | % de retração. Use para o copo **queimado** ter as medidas. |
 | `--altura-reservatorio` | 25 | sobra acima da boca |
-| `--margem-gesso` | 25 | gesso mínimo em volta da barriga e embaixo do pé |
+| `--margem-gesso` | 25 | gesso em volta da boca e acima do pé |
 
 ---
 
