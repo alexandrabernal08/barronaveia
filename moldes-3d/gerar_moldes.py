@@ -10,6 +10,7 @@ stl/barbotina/  -> MOLDE DE COLAGEM (barbotina), 1 peça
                             Vai colado numa mesa lisa (vidro/fórmica).
   * anel_quarto.stl      -> 1/4 da parede de contenção (imprimir 4x).
   * presilha.stl         -> presilha em "C" (imprimir 8x).
+  * pino_desmolde.stl    -> pino que tampa o canal de ar durante o despejo.
 
 stl/prensagem/  -> MOLDE DE PRENSAGEM (placa de argila), 2 peças
   * base_femea.stl   -> base com o positivo do prato em relevo -> molde FÊMEA.
@@ -79,6 +80,16 @@ class Params:
     raio_anel_barbotina: float = 120.0  # raio INTERNO da contenção (mm)
     altura_anel_barbotina: float = 80.0
     segmentos_anel_barbotina: int = 4   # em quantas partes o anel é impresso
+
+    # Canal + pino de desmoldagem (matriz de barbotina)
+    canal_desmolde: bool = True
+    diametro_canal: float = 4.2         # cabe o bico de uma seringa comum
+    diametro_pino: float = 3.9
+    diametro_bolso: float = 34.0        # rebaixo embaixo da matriz, para a cabeça do pino
+    profundidade_bolso: float = 12.0
+    diametro_cabeca_pino: float = 18.0
+    espessura_cabeca_pino: float = 3.0
+    saliencia_pino: float = 0.2         # o pino passa um tiquinho da superfície
 
     # Malha
     resolucao_angular: int = 360
@@ -186,10 +197,16 @@ def positivo_prato(p: Params, flor: Polygon) -> Manifold:
     return corpo
 
 
-def matriz_barbotina(p: Params, flor: Polygon) -> Manifold:
+def matriz_barbotina(p: Params, flor: Polygon, canal: bool | None = None) -> Manifold:
     """Positivo para molde de colagem de 1 peça, de cabeça para baixo como vai
     na mesa: embaixo o reservatório (mais largo na mesa, para desmoldar), depois
-    o degrau de corte na altura da borda do prato e, em cima, o corpo do prato."""
+    o degrau de corte na altura da borda do prato e, em cima, o corpo do prato.
+
+    Canal de desmoldagem: um furo atravessa a matriz no centro, do fundo do
+    prato até um rebaixo (bolso) na face de baixo. Durante o despejo do gesso o
+    furo fica tampado pelo pino. Depois de o gesso endurecer e o bloco ser
+    virado, tira-se o pino e injeta-se ar ou água com uma seringa: isso quebra
+    o vácuo (efeito ventosa) entre o plástico e o gesso e empurra a matriz."""
     th = np.linspace(-np.pi, np.pi, p.resolucao_angular, endpoint=False)
     S, D = p.altura_reservatorio, p.profundidade
     alarga = S * math.tan(math.radians(p.saida_reservatorio))
@@ -205,7 +222,25 @@ def matriz_barbotina(p: Params, flor: Polygon) -> Manifold:
         anel = (CrossSection.circle(p.raio_marca_pe + 0.8, 128)
                 - CrossSection.circle(p.raio_marca_pe - 0.8, 128))
         corpo = corpo + anel.extrude(1.4).translate((0, 0, S + D - 0.6))
+    if p.canal_desmolde if canal is None else canal:
+        corpo = corpo - Manifold.cylinder(S + D + 2, p.diametro_canal / 2, p.diametro_canal / 2, 48).translate((0, 0, -1))
+        corpo = corpo - Manifold.cylinder(p.profundidade_bolso + 1, p.diametro_bolso / 2, p.diametro_bolso / 2, 128).translate((0, 0, -1))
     return corpo
+
+
+def comprimento_pino(p: Params) -> float:
+    """Haste do pino: do teto do bolso até a superfície do fundo do prato."""
+    return p.altura_reservatorio + p.profundidade - p.profundidade_bolso + p.saliencia_pino
+
+
+def pino_desmolde(p: Params) -> Manifold:
+    """Pino que tampa o canal enquanto o gesso é despejado (imprimir em pé,
+    com a cabeça na mesa)."""
+    cab = Manifold.cylinder(p.espessura_cabeca_pino, p.diametro_cabeca_pino / 2, p.diametro_cabeca_pino / 2, 96)
+    L = comprimento_pino(p)
+    r = p.diametro_pino / 2
+    haste = Manifold.cylinder(L - 0.6, r, r, 48) + Manifold.cylinder(0.6, r, r - 0.4, 48).translate((0, 0, L - 0.6))
+    return cab + haste.translate((0, 0, p.espessura_cabeca_pino))
 
 
 def negativo_macho(p: Params, flor: Polygon) -> tuple[Manifold, float]:
@@ -343,39 +378,67 @@ def _plt():
 
 
 def corte_barbotina(p: Params, matriz: trimesh.Trimesh, caminho: str, parede_peca: float = 4.0) -> None:
-    """Desenho em corte do molde de colagem pronto (virado, boca para cima)."""
-    from shapely.geometry import LineString, box
+    """Dois cortes: (1) o gesso sendo despejado sobre a matriz com o pino;
+    (2) o molde de colagem pronto, virado, com a barbotina colada."""
+    from shapely.geometry import box
     plt = _plt()
-    R, H, S = p.raio_anel_barbotina, p.altura_anel_barbotina, p.altura_reservatorio
+    R, H, S, D = p.raio_anel_barbotina, p.altura_anel_barbotina, p.altura_reservatorio, p.profundidade
     rs = np.linspace(-R + 0.5, R - 0.5, 2401)
-    t = np.maximum(_topo(matriz, 90, rs), 0)   # altura da matriz sobre a mesa
-    sup = -t                                    # molde virado: mesa vira a boca
-    gesso = Polygon(np.r_[np.c_[rs, sup], [[rs[-1], -H], [rs[0], -H]]]).buffer(0)
-    cavidade = box(rs[0], -H, rs[-1], 0).difference(gesso)
-    casca = cavidade.intersection(gesso.buffer(parede_peca, resolution=16))
-    peca = casca.intersection(box(-R, -H, R, -S))
-    sobra = casca.intersection(box(-R, -S, R, 0))
+    t = np.maximum(_topo(matriz, 90, rs), 0)   # altura da matriz sobre a mesa (sem o canal)
 
     def pinta(ax, g, **kw):
         for poly in getattr(g, "geoms", [g]):
             if poly.geom_type == "Polygon" and not poly.is_empty:
                 x, y = poly.exterior.xy
                 ax.fill(x, y, **kw)
+                for interior in poly.interiors:
+                    xi, yi = interior.xy
+                    ax.fill(xi, yi, color="white", lw=0)
                 kw.pop("label", None)
 
-    fig, ax = plt.subplots(figsize=(11, 4.8), dpi=130)
-    pinta(ax, gesso, color="#e8e2d6", ec="#9c9284", lw=1, label="gesso – molde de colagem (1 peça)")
-    pinta(ax, peca, color="#b5653f", label=f"parede colada (~{parede_peca:g} mm) = o prato")
-    pinta(ax, sobra, color="#e0b49c", label="sobra do reservatório (aparar)")
-    ax.plot([-R, R], [-S, -S], color="#7a2e12", lw=0.8, ls="--")
-    ax.text(R * 0.99, -S + 1.2, "linha de corte (degrau)", ha="right", fontsize=8, color="#7a2e12")
-    ax.text(0, -S / 2, "reservatório: manter cheio de barbotina", ha="center", va="center", fontsize=8, color="#555")
-    ax.set_xlim(-R - 5, R + 5); ax.set_ylim(-H - 5, 25); ax.set_aspect("equal")
-    ax.set_xlabel("mm"); ax.set_yticks([])
-    ax.set_title("Corte do molde de colagem (barbotina) pronto para usar", fontsize=10)
-    ax.legend(loc="upper left", fontsize=8, frameon=False, ncol=3)
-    for s_ in ("top", "right", "left"):
-        ax.spines[s_].set_visible(False)
+    def estilo(ax, titulo, y0, y1):
+        ax.set_xlim(-R - 12, R + 12); ax.set_ylim(y0, y1); ax.set_aspect("equal")
+        ax.set_yticks([]); ax.set_title(titulo, fontsize=10)
+        ax.legend(loc="upper left", fontsize=7.5, frameon=False, ncol=3)
+        for s_ in ("top", "right", "left"):
+            ax.spines[s_].set_visible(False)
+
+    fig, (a1, a2) = plt.subplots(2, 1, figsize=(11, 9), dpi=130)
+
+    # ---- 1) moldagem: matriz na mesa, pino no lugar, gesso por cima
+    matriz2d = Polygon(np.r_[np.c_[rs, t], [[rs[-1], 0], [rs[0], 0]]]).buffer(0)
+    gesso = box(-R, 0, R, H).difference(matriz2d)
+    rc, rb = p.diametro_canal / 2, p.diametro_bolso / 2
+    furos = box(-rc, 0, rc, S + D).union(box(-rb, 0, rb, p.profundidade_bolso))
+    hc, ec = p.diametro_cabeca_pino / 2, p.espessura_cabeca_pino
+    pino = box(-hc, p.profundidade_bolso - ec, hc, p.profundidade_bolso).union(
+        box(-p.diametro_pino / 2, p.profundidade_bolso, p.diametro_pino / 2, S + D))
+    a1.fill_between([-R - 12, R + 12], -8, 0, color="#cfd6da", label="mesa lisa (vidro/fórmica)")
+    pinta(a1, gesso, color="#e8e2d6", ec="#9c9284", lw=1, label="gesso (despejado por cima)")
+    pinta(a1, matriz2d.difference(furos), color="#e9a7b8", ec="#b0707f", lw=0.8, label="matriz impressa")
+    pinta(a1, pino, color="#f2c94c", ec="#a8841d", lw=0.8, label="pino tampando o canal")
+    for x in (-R - 4, R):
+        a1.fill_between([x, x + 4], 0, H, color="#c98ea0")
+    a1.annotate("canal de ar", xy=(0, S + D * 0.6), xytext=(28, S + D + 18), fontsize=8,
+                arrowprops=dict(arrowstyle="->", lw=0.7))
+    a1.annotate("bolso com a cabeça do pino", xy=(rb * 0.7, p.profundidade_bolso / 2), xytext=(45, 6), fontsize=8,
+                arrowprops=dict(arrowstyle="->", lw=0.7))
+    estilo(a1, "1) Fazendo o molde: o pino tampa o canal enquanto o gesso está líquido", -10, H + 25)
+
+    # ---- 2) molde pronto (virado)
+    sup = -t
+    gesso2 = Polygon(np.r_[np.c_[rs, sup], [[rs[-1], -H], [rs[0], -H]]]).buffer(0)
+    cavidade = box(rs[0], -H, rs[-1], 0).difference(gesso2)
+    casca = cavidade.intersection(gesso2.buffer(parede_peca, resolution=16))
+    pinta(a2, gesso2, color="#e8e2d6", ec="#9c9284", lw=1, label="gesso – molde de colagem (1 peça)")
+    pinta(a2, casca.intersection(box(-R, -H, R, -S)), color="#b5653f", label=f"parede colada (~{parede_peca:g} mm) = o prato")
+    pinta(a2, casca.intersection(box(-R, -S, R, 0)), color="#e0b49c", label="sobra do reservatório (aparar)")
+    a2.plot([-R, R], [-S, -S], color="#7a2e12", lw=0.8, ls="--")
+    a2.text(R * 0.99, -S + 1.2, "linha de corte (degrau)", ha="right", fontsize=8, color="#7a2e12")
+    a2.text(0, -S / 2, "reservatório: manter cheio de barbotina", ha="center", va="center", fontsize=8, color="#555")
+    estilo(a2, "2) Molde pronto (virado, boca para cima) com a barbotina colada", -H - 5, 25)
+    a2.set_xlabel("mm")
+
     plt.tight_layout()
     plt.savefig(caminho)
     plt.close(fig)
@@ -430,6 +493,10 @@ def main() -> None:
     assert p.raio_vale < p.raio_petala
     assert p.largura_aba < p.raio_vale, "largura_aba grande demais para a flor"
     assert raio_chaves(p) + p.raio_chave < p.raio_anel - 3, "sem espaço para as chaves: aumente --raio-anel"
+    if p.canal_desmolde:
+        assert p.profundidade_bolso + 6 < p.altura_reservatorio + p.profundidade, "bolso fundo demais"
+        assert p.diametro_bolso / 2 + 3 < p.raio_vale - p.largura_aba, "bolso largo demais para o fundo do prato"
+        assert p.diametro_pino < p.diametro_canal and p.diametro_canal < p.diametro_cabeca_pino < p.diametro_bolso - 8
     folga_lateral = p.raio_anel_barbotina - (p.raio_petala + p.degrau_corte
                                              + p.altura_reservatorio * math.tan(math.radians(p.saida_reservatorio)))
     if folga_lateral < 30:
@@ -462,9 +529,10 @@ def main() -> None:
         "matriz_barbotina": mb,
         "anel_quarto" if p.segmentos_anel_barbotina == 4 else f"anel_1_de_{p.segmentos_anel_barbotina}": anel_barbotina(p),
         "presilha": presilha(p),
+        **({"pino_desmolde": pino_desmolde(p)} if p.canal_desmolde else {}),
     })
     cil = CrossSection.circle(p.raio_anel_barbotina, 256).extrude(p.altura_anel_barbotina)
-    mostra_gesso("de colagem", (cil - mb).volume() / 1000.0)
+    mostra_gesso("de colagem", (cil - matriz_barbotina(p, flor, canal=False)).volume() / 1000.0)
 
     # ---- molde de prensagem
     fem = base_femea(p, flor)
@@ -482,7 +550,7 @@ def main() -> None:
     if args.preview:
         pasta = os.path.join(os.path.dirname(args.saida), "imagens")
         os.makedirs(pasta, exist_ok=True)
-        corte_barbotina(p, barb["matriz_barbotina"], os.path.join(pasta, "corte_barbotina.png"))
+        corte_barbotina(p, para_trimesh(matriz_barbotina(p, flor, canal=False)), os.path.join(pasta, "corte_barbotina.png"))
         corte_prensagem(p, pren, os.path.join(pasta, "corte_prensagem.png"))
         print("\nimagens/corte_barbotina.png e imagens/corte_prensagem.png gerados")
 

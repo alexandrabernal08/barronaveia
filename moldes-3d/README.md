@@ -21,12 +21,24 @@ Matrizes impressas em 3D para fazer moldes de gesso de um prato em forma de flor
 | `matriz_barbotina.stl` | 1x | O **prato de cabeça para baixo**. Em cima fica o corpo do prato; embaixo, o **reservatório** de 20 mm com o **degrau de corte** de 2 mm na altura da borda. | 163 × 160 × 46 |
 | `anel_quarto.stl` | **4x** | 1/4 da parede de contenção (Ø interno 240 mm, 80 mm de altura). | 134 × 134 × 80 |
 | `presilha.stl` | **8x** | Presilha em "C". Vão 2 por emenda, uma embaixo e uma em cima. | 14 × 13 × 20 |
+| `pino_desmolde.stl` | 1x (faça 2, por garantia) | **Pino de desmoldagem.** Tampa o canal de ar enquanto o gesso está líquido. | Ø 18 × 36 |
 
 Todas as peças cabem numa mesa de impressão de 220 × 220 mm.
 
-![Matriz](imagens/matriz_barbotina.png)
+| Matriz (lado do prato) | Matriz por baixo: bolso, canal e pino |
+|---|---|
+| ![Matriz](imagens/matriz_barbotina.png) | ![Pino](imagens/matriz_pino.png) |
 
-### Como fica o molde pronto
+### O pino de desmoldagem
+
+O plástico liso da matriz gruda no gesso por **efeito ventosa**: na hora de tirar a matriz, forma-se vácuo entre os dois e ela não sai. Puxar com força pode lascar o molde.
+
+Por isso a matriz tem um **canal de ar** de Ø 4 mm no centro. Ele vai do fundo do prato até um **bolso** na face de baixo.
+
+- **Enquanto o gesso está líquido**, o pino fica encaixado no canal, com a ponta rente à superfície, para o gesso não entrar no furo.
+- **Depois que o gesso endurece**, o bloco é virado, o pino sai e injeta-se **ar ou água com uma seringa** pelo canal. A pressão entra entre a matriz e o gesso, quebra o vácuo e empurra a matriz para fora.
+
+### Em corte: fazendo o molde e o molde pronto
 
 ![Corte do molde de colagem](imagens/corte_barbotina.png)
 
@@ -45,16 +57,20 @@ O molde é **um bloco de gesso só**, com a "boca" para cima.
   3. Lixe de novo.
   4. Passe 2 demãos de verniz ou resina de acabamento (tipo XTC-3D).
 - O anel e as presilhas podem ser impressos com 0,2–0,28 mm.
+- **Pino:** imprima **em pé**, com a cabeça na mesa e 100% de preenchimento.
+- **Canal:** depois de impresso, passe uma **broca de 4 mm** à mão pelo canal, de baixo para cima. Furos impressos costumam sair um pouco menores, e a broca deixa o encaixe certo.
+- **Teste o pino.** Ele deve entrar justo e com a ponta rente ao fundo do prato. Se sobrar mais de 0,5 mm para fora, lixe a ponta. Se ficar para dentro, imprima outro com `--saliencia-pino` maior. Um pino curto demais deixa o gesso entrar e entupir o canal.
 
 ## 2. Montagem para despejar o gesso
 
 1. Use uma **superfície lisa e plana**, como vidro, fórmica ou acrílico, de pelo menos 30 × 30 cm.
-2. Apoie a matriz com o **lado largo (reservatório) para baixo**, no centro.
-3. Vede a junção da matriz com a mesa com um cordão fino de argila ou massinha, para o gesso não entrar por baixo. Alise o cordão rente para não criar um degrau.
-4. Monte os 4 quartos do anel em volta e prenda com **2 presilhas por emenda**.
-5. **Centralize:** a distância do anel até a ponta de cada pétala deve ser parecida (~36 mm).
-6. Vede por fora, com argila, as emendas do anel e a junção do anel com a mesa.
-7. Passe **desmoldante** na matriz, no anel e na mesa. Pode ser vaselina líquida diluída, sabão de potássio ou desmoldante próprio para gesso. Tire o excesso com pincel.
+2. Passe um pouco de vaselina no pino e **encaixe-o no canal**, por baixo, até a cabeça encostar no fundo do bolso.
+3. Apoie a matriz com o **lado largo (reservatório) para baixo**, no centro. O pino fica escondido dentro do bolso, sem encostar na mesa.
+4. Vede a junção da matriz com a mesa com um cordão fino de argila ou massinha, para o gesso não entrar por baixo. Alise o cordão rente para não criar um degrau.
+5. Monte os 4 quartos do anel em volta e prenda com **2 presilhas por emenda**.
+6. **Centralize:** a distância do anel até a ponta de cada pétala deve ser parecida (~36 mm).
+7. Vede por fora, com argila, as emendas do anel e a junção do anel com a mesa.
+8. Passe **desmoldante** na matriz, no anel e na mesa. Pode ser vaselina líquida diluída, sabão de potássio ou desmoldante próprio para gesso. Tire o excesso com pincel.
 
 ## 3. Despejando o gesso
 
@@ -71,8 +87,12 @@ Essa quantidade enche o anel até a borda e já inclui 10% de sobra.
 3. Despeje **pela lateral**, num fio contínuo, até a borda do anel. Isso deixa ~34 mm de gesso por cima da matriz.
 4. Dê batidinhas na mesa por 1 minuto para subir as bolhas.
 5. Espere o gesso esquentar e esfriar (30–60 min).
-6. Tire as presilhas e o anel e **vire o bloco**. O lado que estava na mesa é a boca do molde.
-7. Puxe a matriz para fora. Se ela prender, dê leves batidinhas ou sopre ar comprimido na fresta.
+6. Tire as presilhas e o anel e **vire o bloco**, com a matriz ainda dentro. O lado que estava na mesa é a boca do molde, e o bolso com o pino fica para cima.
+7. **Desmolde com o pino:**
+   1. Puxe o pino. Se ele estiver preso, use um alicate.
+   2. Encaixe o bico de uma seringa de 20–60 ml no canal e injete ar ou água devagar.
+   3. A matriz se solta, e às vezes até "pula". Levante-a.
+   4. Se ainda resistir, repita com água: ela não comprime e empurra mais forte.
 8. Chanfre as quinas externas do bloco e a borda da boca.
 9. **Secagem:** deixe secar por **7 dias** em local ventilado antes da primeira colagem. Se for usar estufa, não passe de 50 °C.
 
@@ -176,6 +196,9 @@ python3 gerar_moldes.py --folga-presilha 0.4
 | `--raio-anel-barbotina` | 120 | raio interno da contenção. O script avisa se sobrar menos de 30 mm de gesso ao lado das pétalas. |
 | `--altura-anel-barbotina` | 80 | altura da contenção, que é a altura do bloco de gesso |
 | `--segmentos-anel-barbotina` | 4 | em quantas partes imprimir o anel |
+| `--canal-desmolde` | sim | canal de ar + pino de desmoldagem (`nao` para tirar) |
+| `--diametro-canal` / `--diametro-pino` | 4,2 / 3,9 | furo do canal e haste do pino |
+| `--saliencia-pino` | 0,2 | quanto a ponta do pino passa da superfície do prato |
 | **Prensagem** | | |
 | `--espessura-argila` | 6 | vão entre macho e fêmea |
 | `--raio-anel` | 100 | raio interno da caixa de prensagem |
