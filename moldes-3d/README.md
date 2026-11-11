@@ -13,6 +13,8 @@ Matrizes impressas em 3D para fazer moldes de gesso para cerâmica:
 
 # Molde de copo (barbotina, 1 peça)
 
+> Guia só do copo, para baixar ou imprimir: [GUIA_COPO.md](GUIA_COPO.md) · [GUIA_COPO.pdf](GUIA_COPO.pdf)
+
 Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **pé em anel** no fundo. A boca é a parte mais larga, então o copo sai do gesso por cima. O molde é **de uma peça só**, sem emenda na peça.
 
 | Medida (peça crua, como sai do molde) | |
