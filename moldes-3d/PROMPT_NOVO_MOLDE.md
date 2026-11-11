@@ -1,5 +1,7 @@
 # Prompt para criar um novo molde de gesso
 
+> Versão para imprimir: [PROMPT_NOVO_MOLDE.pdf](PROMPT_NOVO_MOLDE.pdf)
+
 Copie o bloco abaixo, preencha a parte **"A PEÇA"** e cole numa nova conversa com o Claude, de preferência no repositório `barronaveia`. Anexe as fotos de referência junto.
 
 ---
@@ -62,6 +64,26 @@ REGRAS DO PROCESSO (siga todas):
    - Todas as peças devem caber na impressora informada. Se não couberem,
      divida em mais segmentos ou avise e sugira o ajuste.
 
+3b. MARCA DA ESCOLA (obrigatória em todo molde)
+   - Todo bloco de gesso sai com o logo "Escola de Cerâmica BARRO NA VEIA"
+     GRAVADO na parede externa. Use o módulo moldes-3d/marca.py
+     (relevo_no_anel), sem recriar.
+   - Um dos segmentos do anel recebe o logo em RELEVO por dentro: exporte
+     como <anel>_logo.stl (1x) e mantenha os segmentos lisos (N-1x).
+   - O logo vai lido de fora: no anel ele fica espelhado, como um carimbo, e
+     no gesso fica legível. Se o molde for VIRADO para usar (boca para cima),
+     use virado=True para o logo ficar de pé com o molde em uso.
+   - Relevo de 1,2 mm com laterais inclinadas (degraus), centralizado no
+     segmento e no meio da altura do gesso, com pelo menos 10 mm de folga
+     das bordas e das emendas. A largura deve caber na altura do bloco
+     (parâmetro --logo-largura).
+   - Fonte do logo: marca/logo.png, se existir (vetorizado automaticamente),
+     senão a fonte Barrio (marca/Barrio-Regular.ttf, licença OFL) no layout
+     do logo: "ESCOLA DE CERÂMICA" / "BARRO" / "NA VEIA".
+   - Confira numa renderização do BLOCO DE GESSO simulado (bloco − anel −
+     matriz, GIRADO para a posição de uso, nunca espelhado) que o logo fica
+     legível e de pé.
+
 4. CÓDIGO
    - Crie moldes-3d/gerar_<nome>.py PARAMÉTRICO (dataclass de parâmetros +
      argparse automático, como gerar_copo.py), em milímetros, com o parâmetro
@@ -80,7 +102,8 @@ REGRAS DO PROCESSO (siga todas):
      (2) molde pronto com a parede colada (~4 mm), a sobra do reservatório
      e a linha de corte.
    - Renderizações 3D (three.js + Playwright): todas as peças, a matriz vista
-     por baixo e a PEÇA PRONTA (em pé e de cabeça para baixo).
+     por baixo, a PEÇA PRONTA (em pé e de cabeça para baixo) e o BLOCO DE
+     GESSO com o logo gravado.
    - Olhe as imagens você mesmo e corrija o que estiver errado: contrassaída,
      saída insuficiente, pé errado, peça que não cabe na impressora, artefato
      visual.
@@ -91,7 +114,7 @@ REGRAS DO PROCESSO (siga todas):
    - Nova seção no moldes-3d/README.md e um guia separado
      moldes-3d/GUIA_<NOME>.md + GUIA_<NOME>.pdf (com as imagens), contendo:
      tabela de medidas (deixando claro se é crua ou queimada) · imagem da peça
-     pronta · corte · tabela de peças (arquivo, quantas imprimir, o que é,
+     pronta · corte · imagem do bloco com a marca · tabela de peças (arquivo, quantas imprimir, o que é,
      tamanho) · links de download · lista de material · impressão (camada,
      orientação, lixar/primer/verniz, broca no canal, pino) · como fazer o
      molde de gesso (pino, montagem, vedação, desmoldante, quantidade de

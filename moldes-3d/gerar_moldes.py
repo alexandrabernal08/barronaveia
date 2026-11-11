@@ -8,7 +8,8 @@ Gera os arquivos STL para fazer, em gesso, moldes de um prato em forma de flor.
 stl/barbotina/  -> MOLDE DE COLAGEM (barbotina), 1 peça
   * matriz_barbotina.stl -> positivo do prato + reservatório + degrau de corte.
                             Vai colado numa mesa lisa (vidro/fórmica).
-  * anel_quarto.stl      -> 1/4 da parede de contenção (imprimir 4x).
+  * anel_quarto.stl      -> 1/4 da parede de contenção (imprimir 3x).
+  * anel_quarto_logo.stl -> o 4º quarto, com o logo da escola em relevo por dentro.
   * presilha.stl         -> presilha em "C" (imprimir 8x).
   * pino_desmolde.stl    -> pino que tampa o canal de ar durante o despejo.
 
@@ -16,7 +17,8 @@ stl/prensagem/  -> MOLDE DE PRENSAGEM (placa de argila), 2 peças
   * base_femea.stl   -> base com o positivo do prato em relevo -> molde FÊMEA.
   * base_macho.stl   -> base com o rebaixo do prato (descontada a espessura
                         da argila) -> molde MACHO.
-  * anel_metade.stl  -> metade da parede circular (imprimir 2x).
+  * anel_metade.stl  -> metade da parede circular (imprimir 1x).
+  * anel_metade_logo.stl -> a outra metade, com o logo da escola em relevo por dentro.
   * presilha.stl     -> presilha em "C" (imprimir 4x).
 
 Todas as medidas estão em milímetros e podem ser alteradas pela linha de
@@ -90,6 +92,13 @@ class Params:
     diametro_cabeca_pino: float = 18.0
     espessura_cabeca_pino: float = 3.0
     saliencia_pino: float = 0.2         # o pino passa um tiquinho da superfície
+
+    # Marca da escola gravada na parede externa do gesso
+    logo: bool = True
+    logo_arquivo: str = ""               # vazio = marca/logo.png se existir, senão fonte Barrio
+    logo_profundidade: float = 1.2
+    logo_largura_barbotina: float = 55.0
+    logo_largura_prensagem: float = 38.0
 
     # Malha
     resolucao_angular: int = 360
@@ -319,6 +328,14 @@ def anel_barbotina(p: Params) -> Manifold:
                          p.altura_anel_barbotina, p.segmentos_anel_barbotina)
 
 
+def com_logo(p: Params, anel: Manifold, raio: float, ang: float, z_c: float, largura: float) -> Manifold:
+    """Une o logo em relevo à parede interna de um segmento de anel."""
+    from marca import relevo_no_anel
+    rel, h, _ = relevo_no_anel(raio, ang, z_c, largura, p.logo_profundidade, virado=True,
+                               arquivo=p.logo_arquivo or None)
+    return anel + rel
+
+
 def presilha(p: Params) -> Manifold:
     vao = 2 * p.parede + p.folga_presilha   # justo: trava por atrito
     prof = p.aba_presilha + 0.4
@@ -526,9 +543,14 @@ def main() -> None:
 
     # ---- molde de colagem (barbotina)
     mb = matriz_barbotina(p, flor)
+    nome_anel_b = "anel_quarto" if p.segmentos_anel_barbotina == 4 else f"anel_1_de_{p.segmentos_anel_barbotina}"
     barb = exporta(os.path.join(args.saida, "barbotina"), {
         "matriz_barbotina": mb,
-        "anel_quarto" if p.segmentos_anel_barbotina == 4 else f"anel_1_de_{p.segmentos_anel_barbotina}": anel_barbotina(p),
+        nome_anel_b: anel_barbotina(p),
+        **({nome_anel_b + "_logo": com_logo(p, anel_barbotina(p), p.raio_anel_barbotina,
+                                             180.0 / p.segmentos_anel_barbotina,
+                                             p.altura_anel_barbotina / 2, p.logo_largura_barbotina)}
+           if p.logo else {}),
         "presilha": presilha(p),
         **({"pino_desmolde": pino_desmolde(p)} if p.canal_desmolde else {}),
     })
@@ -542,6 +564,9 @@ def main() -> None:
         "base_femea": fem,
         "base_macho": mac,
         "anel_metade": anel_metade(p),
+        **({"anel_metade_logo": com_logo(p, anel_metade(p), p.raio_anel, 90.0,
+                                         (p.altura_plug_femea + p.profundidade - p.espessura_argila + 3 + p.altura_anel) / 2,
+                                         p.logo_largura_prensagem)} if p.logo else {}),
         "presilha": presilha(p),
     })
     zmax_macho = p.profundidade - p.espessura_argila

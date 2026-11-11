@@ -9,6 +9,20 @@ Matrizes impressas em 3D para fazer moldes de gesso para cerâmica:
 | Pasta | `stl/copo/` | `stl/barbotina/` | `stl/prensagem/` |
 | Gerador | `gerar_copo.py` | `gerar_moldes.py` | `gerar_moldes.py` |
 
+## Marca da escola gravada no gesso
+
+![Bloco de gesso com o logo gravado](imagens/gesso_logo.png)
+
+Todo molde sai com o logo **Escola de Cerâmica BARRO NA VEIA** gravado na parede externa do gesso, como uma marca registrada.
+
+- **Como funciona:** um dos segmentos do anel (`*_logo.stl`) tem o logo em **relevo por dentro**. O gesso copia esse relevo, e o logo fica **gravado** (baixo-relevo) no bloco. Gravado é mais resistente que letra saltada, porque não lasca.
+- **Legível e de pé:** no anel, o logo vai espelhado, como um carimbo. Ele também vai girado, porque o molde é virado para usar. No gesso, aparece legível e de pé com o molde de boca para cima.
+- **Laterais inclinadas:** as letras têm laterais inclinadas, para o anel soltar sem arrancar as bordas da gravação.
+- **Fonte:** o logo é montado com a fonte **Barrio**, a mesma do logo original, que fica em `marca/` com a licença livre OFL.
+- **Usar o logo em imagem:** salve o PNG em `moldes-3d/marca/logo.png`. Os geradores vetorizam a imagem sozinhos: tudo que não for branco vira relevo.
+- **Desligar ou mudar o tamanho:** `--logo nao`, `--logo-largura 70` (copo), `--logo-largura-barbotina` ou `--logo-largura-prensagem` (prato).
+- **Impressão:** imprima o segmento com logo **em pé**, como os outros. O relevo de 1,2 mm sai sem suporte. Na hora de montar, passe desmoldante com pincel dentro das letras.
+
 > **Novo molde?** Use o prompt padrão em [PROMPT_NOVO_MOLDE.md](PROMPT_NOVO_MOLDE.md): é só preencher as medidas, anexar as fotos e colar numa conversa com o Claude.
 
 ---
@@ -37,7 +51,8 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 | Arquivo | Imprimir | O que é | Tamanho (mm) |
 |---|---|---|---|
 | `matriz_copo.stl` | 1x | O **copo de cabeça para baixo** sobre uma aba. A aba tem degraus que formam o encaixe do anel, o **reservatório** e o **degrau de corte**. Por dentro a matriz é **oca**, com um tubo central para o pino e 3 nervuras. | 214 × 214 × 172 |
-| `anel_quarto.stl` | **4x** | 1/4 da parede de contenção (Ø interno 200 mm, 194 mm de altura). | 114 × 114 × 194 |
+| `anel_quarto.stl` | **3x** | 1/4 da parede de contenção (Ø interno 200 mm, 194 mm de altura). | 114 × 114 × 194 |
+| `anel_quarto_logo.stl` | **1x** | O 4º quarto, com o **logo da escola** em relevo por dentro. Ele fica gravado no gesso. | 114 × 114 × 194 |
 | `presilha.stl` | **12x** | Trava os quartos do anel, 3 por emenda. | 14 × 13 × 20 |
 | `pino_desmolde.stl` | 2x | Pino Ø 6 mm que atravessa o tubo central e tampa o furo no fundo do copo. | Ø 20 × 166 |
 
@@ -57,7 +72,7 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 
 1. **Pino:** passe vaselina no pino e enfie-o por baixo, pelo tubo central, até a cabeça encostar. A ponta deve ficar rente ao centro do fundo do copo, dentro do anel do pé.
 2. **Base:** apoie a matriz na mesa com a aba para baixo.
-3. **Anel:** monte os 4 quartos do anel em volta do degrau da aba. O degrau **centraliza sozinho**. Prenda com 3 presilhas por emenda.
+3. **Anel:** monte os 4 quartos do anel em volta do degrau da aba (3 lisos e 1 com o logo). O degrau **centraliza sozinho**. Prenda com 3 presilhas por emenda.
 4. **Vedação e desmoldante:** vede as emendas por fora com argila e passe desmoldante na matriz e no anel.
 5. **Gesso:** use consistência 70, com ~**3,8 kg de gesso** e ~**2,7 L de água**.
    1. Despeje pela lateral, sem jogar direto no copo, até a borda do anel. Isso deixa ~25 mm de gesso acima do pé.
@@ -123,7 +138,8 @@ python3 gerar_copo.py --help
 | Arquivo | Imprimir | O que é | Tamanho (mm) |
 |---|---|---|---|
 | `matriz_barbotina.stl` | 1x | O **prato de cabeça para baixo**. Em cima fica o corpo do prato; embaixo, o **reservatório** de 20 mm com o **degrau de corte** de 2 mm na altura da borda. | 163 × 160 × 46 |
-| `anel_quarto.stl` | **4x** | 1/4 da parede de contenção (Ø interno 240 mm, 80 mm de altura). | 134 × 134 × 80 |
+| `anel_quarto.stl` | **3x** | 1/4 da parede de contenção (Ø interno 240 mm, 80 mm de altura). | 134 × 134 × 80 |
+| `anel_quarto_logo.stl` | **1x** | O 4º quarto, com o **logo da escola** em relevo por dentro. | 134 × 134 × 80 |
 | `presilha.stl` | **8x** | Presilha em "C". Vão 2 por emenda, uma embaixo e uma em cima. | 14 × 13 × 20 |
 | `pino_desmolde.stl` | 1x (faça 2, por garantia) | **Pino de desmoldagem.** Tampa o canal de ar enquanto o gesso está líquido. | Ø 18 × 36 |
 
@@ -228,7 +244,8 @@ O prato sai cru com **Ø 160 mm**. Com a retração da barbotina (12–15%), dev
 |---|---|---|---|
 | `base_femea.stl` | 1x | Base com o **positivo** do prato em relevo e 3 bolinhas de registro. Gera o molde **fêmea** (côncavo). | 214 × 214 × 33 |
 | `base_macho.stl` | 1x | Base com o **rebaixo** do prato (já descontados 6 mm de argila) e 3 covinhas de registro. Gera o molde **macho** (convexo). | 214 × 214 × 25 |
-| `anel_metade.stl` | **2x** | Metade da parede da caixa (Ø interno 200 mm, 65 mm de altura). Serve para as duas bases. | 228 × 104 × 65 |
+| `anel_metade.stl` | **1x** | Metade da parede da caixa (Ø interno 200 mm, 65 mm de altura). Serve para as duas bases. | 228 × 104 × 65 |
+| `anel_metade_logo.stl` | **1x** | A outra metade, com o **logo da escola** em relevo por dentro. | 228 × 104 × 65 |
 | `presilha.stl` | **4x** | Presilha em "C" que trava as abas do anel. | 14 × 13 × 20 |
 
 | Base fêmea | Base macho |

@@ -15,6 +15,10 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 
 ![Corte do molde de copo](imagens/corte_copo.png)
 
+**Marca da escola:** o bloco de gesso sai com o logo **Escola de Cerâmica BARRO NA VEIA** gravado na parede externa. Ele vem do quarto de anel com o logo em relevo por dentro.
+
+![Bloco de gesso com o logo gravado](imagens/gesso_logo.png)
+
 ## Peças (pasta `stl/copo/`)
 
 ![Peças do molde de copo](imagens/copo.png)
@@ -22,7 +26,8 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 | Arquivo | Imprimir | O que é | Tamanho (mm) |
 |---|---|---|---|
 | `matriz_copo.stl` | 1x | O **copo de cabeça para baixo** sobre uma aba. A aba tem degraus que formam o encaixe do anel, o **reservatório** e o **degrau de corte**. Por dentro a matriz é **oca**, com um tubo central para o pino e 3 nervuras. | 214 × 214 × 172 |
-| `anel_quarto.stl` | **4x** | 1/4 da parede de contenção (Ø interno 200 mm, 194 mm de altura). | 114 × 114 × 194 |
+| `anel_quarto.stl` | **3x** | 1/4 da parede de contenção (Ø interno 200 mm, 194 mm de altura). | 114 × 114 × 194 |
+| `anel_quarto_logo.stl` | **1x** | O 4º quarto, com o **logo da escola** em relevo por dentro. Ele fica gravado no gesso. | 114 × 114 × 194 |
 | `presilha.stl` | **12x** | Trava os quartos do anel, 3 por emenda. | 14 × 13 × 20 |
 | `pino_desmolde.stl` | 2x | Pino Ø 6 mm que atravessa o tubo central e tampa o furo no fundo do copo. | Ø 20 × 166 |
 
@@ -36,7 +41,8 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 | Peça | Imprimir | Link |
 |---|---|---|
 | Matriz do copo | 1x | [matriz_copo.stl](https://github.com/alexandrabernal08/barronaveia/blob/claude/affectionate-fermat-465xq0/moldes-3d/stl/copo/matriz_copo.stl) |
-| 1/4 do anel | 4x | [anel_quarto.stl](https://github.com/alexandrabernal08/barronaveia/blob/claude/affectionate-fermat-465xq0/moldes-3d/stl/copo/anel_quarto.stl) |
+| 1/4 do anel | 3x | [anel_quarto.stl](https://github.com/alexandrabernal08/barronaveia/blob/claude/affectionate-fermat-465xq0/moldes-3d/stl/copo/anel_quarto.stl) |
+| 1/4 do anel com logo | 1x | [anel_quarto_logo.stl](https://github.com/alexandrabernal08/barronaveia/blob/claude/affectionate-fermat-465xq0/moldes-3d/stl/copo/anel_quarto_logo.stl) |
 | Presilha | 12x | [presilha.stl](https://github.com/alexandrabernal08/barronaveia/blob/claude/affectionate-fermat-465xq0/moldes-3d/stl/copo/presilha.stl) |
 | Pino de desmoldagem | 2x | [pino_desmolde.stl](https://github.com/alexandrabernal08/barronaveia/blob/claude/affectionate-fermat-465xq0/moldes-3d/stl/copo/pino_desmolde.stl) |
 
@@ -61,7 +67,7 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 
 1. **Pino:** passe vaselina no pino e enfie-o por baixo, pelo tubo central, até a cabeça encostar. A ponta deve ficar rente ao centro do fundo do copo, dentro do anel do pé.
 2. **Base:** apoie a matriz na mesa com a aba para baixo.
-3. **Anel:** monte os 4 quartos do anel em volta do degrau da aba. O degrau **centraliza sozinho**. Prenda com 3 presilhas por emenda.
+3. **Anel:** monte os 4 quartos do anel em volta do degrau da aba (3 lisos e 1 com o logo). O degrau **centraliza sozinho**. Prenda com 3 presilhas por emenda.
 4. **Vedação e desmoldante:** vede as emendas por fora com argila e passe desmoldante na matriz e no anel.
 5. **Gesso:** use consistência 70, com ~**3,8 kg de gesso** e ~**2,7 L de água**.
     1. Despeje pela lateral, sem jogar direto no copo, até a borda do anel. Isso deixa ~25 mm de gesso acima do pé.

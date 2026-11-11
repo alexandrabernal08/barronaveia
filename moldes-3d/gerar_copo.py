@@ -14,7 +14,9 @@ Medidas padrão da peça (crua, como sai do molde):
   * matriz_copo.stl   -> o copo de cabeça para baixo sobre uma aba em degraus
                          (reservatório + degrau de corte + encaixe do anel).
                          Por dentro é oca, com um tubo central para o pino.
-  * anel_quarto.stl   -> 1/4 da parede de contenção (imprimir 4x).
+  * anel_quarto.stl   -> 1/4 da parede de contenção (imprimir 3x).
+  * anel_quarto_logo.stl -> o 4º quarto, com o logo da escola em relevo por
+                         dentro: ele fica GRAVADO na parede externa do gesso.
   * presilha.stl      -> trava os quartos do anel (imprimir 12x: 3 por emenda).
   * pino_desmolde.stl -> tampa o canal de ar durante o despejo (imprimir 2x).
 
@@ -36,6 +38,7 @@ from manifold3d import CrossSection, Manifold
 from shapely.geometry import Polygon, box
 
 from gerar_moldes import Params as ParamsPrato, anel_segmento, para_trimesh, presilha, receita
+from marca import relevo_no_anel
 
 
 @dataclass
@@ -75,6 +78,12 @@ class ParamsCopo:
     diametro_cabeca_pino: float = 20.0
     espessura_cabeca_pino: float = 3.0
     saliencia_pino: float = 0.2
+
+    # Marca da escola gravada na parede externa do gesso (relevo num quarto do anel)
+    logo: bool = True
+    logo_largura: float = 85.0
+    logo_profundidade: float = 1.2
+    logo_arquivo: str = ""         # vazio = marca/logo.png se existir, senão fonte Barrio
 
     segmentos: int = 256
 
@@ -200,6 +209,17 @@ def anel_copo(p: ParamsCopo) -> Manifold:
     return anel_segmento(g["R_in"], p.parede, p.aba_presilha, g["altura_anel"], p.segmentos_anel)
 
 
+def anel_copo_logo(p: ParamsCopo) -> tuple[Manifold, str]:
+    """Segmento do anel com o logo em relevo por dentro (fica gravado no gesso).
+    O molde do copo é virado para usar, então o logo vai girado 180°."""
+    g = geometria(p)
+    z_c = (p.altura_plug + g["altura_anel"]) / 2          # meio da altura do gesso
+    rel, h, origem = relevo_no_anel(g["R_in"], 180.0 / p.segmentos_anel, z_c, p.logo_largura,
+                                    p.logo_profundidade, virado=True, arquivo=p.logo_arquivo or None)
+    assert h < g["altura_anel"] - p.altura_plug - 20, "logo alto demais para o bloco"
+    return anel_copo(p) + rel, origem
+
+
 # --------------------------------------------------------------------------
 # Desenho em corte
 # --------------------------------------------------------------------------
@@ -312,11 +332,15 @@ def main() -> None:
     g = geometria(p)
     os.makedirs(a.saida, exist_ok=True)
     pp = ParamsPrato(parede=p.parede, aba_presilha=p.aba_presilha)
+    nome_anel = "anel_quarto" if p.segmentos_anel == 4 else f"anel_1_de_{p.segmentos_anel}"
     pecas = {
         "matriz_copo": matriz_copo(p),
-        "anel_quarto" if p.segmentos_anel == 4 else f"anel_1_de_{p.segmentos_anel}": anel_copo(p),
-        "presilha": presilha(pp),
+        nome_anel: anel_copo(p),
     }
+    if p.logo:
+        pecas[nome_anel + "_logo"], origem = anel_copo_logo(p)
+        print(f"  logo: {origem}")
+    pecas["presilha"] = presilha(pp)
     if p.canal_desmolde:
         pecas["pino_desmolde"] = pino(p)
     print("[copo]")
