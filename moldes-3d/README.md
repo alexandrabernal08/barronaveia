@@ -22,6 +22,8 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 | Parede | abre 3° até a boca, o que ajuda a desmoldar |
 | Pé | **anel** com Ø 7 cm por fora, 6 mm de largura e **0,5 cm** de altura. O centro fica rebaixado. |
 
+![Copo pronto: em pé e de cabeça para baixo, mostrando o pé em anel](imagens/copo_peca.png)
+
 ![Corte do molde de copo](imagens/corte_copo.png)
 
 ## Peças (pasta `stl/copo/`)
