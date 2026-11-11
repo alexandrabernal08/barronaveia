@@ -9,6 +9,8 @@ Matrizes impressas em 3D para fazer moldes de gesso para cerâmica:
 | Pasta | `stl/copo/` | `stl/barbotina/` | `stl/prensagem/` |
 | Gerador | `gerar_copo.py` | `gerar_moldes.py` | `gerar_moldes.py` |
 
+> **Novo molde?** Use o prompt padrão em [PROMPT_NOVO_MOLDE.md](PROMPT_NOVO_MOLDE.md): é só preencher as medidas, anexar as fotos e colar numa conversa com o Claude.
+
 ---
 
 # Molde de copo (barbotina, 1 peça)
