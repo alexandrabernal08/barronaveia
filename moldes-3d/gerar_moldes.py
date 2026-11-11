@@ -3,21 +3,20 @@
 Gerador de matrizes 3D para moldes de gesso — Barro na Veia
 ============================================================
 
-Gera os arquivos STL de um sistema de "caixa de contenção" impressa em 3D
-para fazer um MOLDE DE PRENSAGEM DE 2 PARTES em gesso para um prato em forma
-de flor:
+Gera os arquivos STL para fazer, em gesso, moldes de um prato em forma de flor.
 
-  * base_femea.stl   -> base com o positivo (o "corpo" do prato) em relevo.
-                        Gesso derramado aqui vira o molde FÊMEA (côncavo).
-  * base_macho.stl   -> base com o rebaixo do prato (já descontada a
-                        espessura da argila). Gesso derramado aqui vira o
-                        molde MACHO (convexo).
+stl/barbotina/  -> MOLDE DE COLAGEM (barbotina), 1 peça
+  * matriz_barbotina.stl -> positivo do prato + reservatório + degrau de corte.
+                            Vai colado numa mesa lisa (vidro/fórmica).
+  * anel_quarto.stl      -> 1/4 da parede de contenção (imprimir 4x).
+  * presilha.stl         -> presilha em "C" (imprimir 8x).
+
+stl/prensagem/  -> MOLDE DE PRENSAGEM (placa de argila), 2 peças
+  * base_femea.stl   -> base com o positivo do prato em relevo -> molde FÊMEA.
+  * base_macho.stl   -> base com o rebaixo do prato (descontada a espessura
+                        da argila) -> molde MACHO.
   * anel_metade.stl  -> metade da parede circular (imprimir 2x).
-  * presilha.stl     -> presilha em "C" que trava as duas metades (imprimir 4x).
-
-As duas bases usam o MESMO anel. As chaves de registro (bolinhas na fêmea,
-covinhas no macho) fazem as duas peças de gesso encaixarem sempre na mesma
-posição.
+  * presilha.stl     -> presilha em "C" (imprimir 4x).
 
 Todas as medidas estão em milímetros e podem ser alteradas pela linha de
 comando. Exemplo para um prato maior (precisa de mesa de impressão maior):
@@ -72,6 +71,14 @@ class Params:
     # Chaves de registro
     raio_chave: float = 5.0
     folga_chave: float = 0.4
+
+    # Molde de colagem (barbotina)
+    altura_reservatorio: float = 20.0   # sobra acima da borda do prato (mm)
+    degrau_corte: float = 2.0           # ressalto que marca onde aparar a borda (mm)
+    saida_reservatorio: float = 5.0     # inclinação da parede do reservatório (graus)
+    raio_anel_barbotina: float = 120.0  # raio INTERNO da contenção (mm)
+    altura_anel_barbotina: float = 80.0
+    segmentos_anel_barbotina: int = 4   # em quantas partes o anel é impresso
 
     # Malha
     resolucao_angular: int = 360
@@ -179,6 +186,28 @@ def positivo_prato(p: Params, flor: Polygon) -> Manifold:
     return corpo
 
 
+def matriz_barbotina(p: Params, flor: Polygon) -> Manifold:
+    """Positivo para molde de colagem de 1 peça, de cabeça para baixo como vai
+    na mesa: embaixo o reservatório (mais largo na mesa, para desmoldar), depois
+    o degrau de corte na altura da borda do prato e, em cima, o corpo do prato."""
+    th = np.linspace(-np.pi, np.pi, p.resolucao_angular, endpoint=False)
+    S, D = p.altura_reservatorio, p.profundidade
+    alarga = S * math.tan(math.radians(p.saida_reservatorio))
+    zs = [0.0, S]
+    raios = [raio_polar(flor.buffer(p.degrau_corte + alarga, resolution=32), th),
+             raio_polar(flor.buffer(p.degrau_corte, resolution=32), th)]
+    us = np.sin(np.linspace(0, np.pi / 2, p.camadas))
+    for u in us:
+        zs.append(S + u * D)
+        raios.append(raio_polar(secao_femea(p, flor, u * D), th))
+    corpo = loft(zs, raios, th)
+    if p.marca_pe:
+        anel = (CrossSection.circle(p.raio_marca_pe + 0.8, 128)
+                - CrossSection.circle(p.raio_marca_pe - 0.8, 128))
+        corpo = corpo + anel.extrude(1.4).translate((0, 0, S + D - 0.6))
+    return corpo
+
+
 def negativo_macho(p: Params, flor: Polygon) -> tuple[Manifold, float]:
     th = np.linspace(-np.pi, np.pi, p.resolucao_angular, endpoint=False)
     zmax = p.profundidade - p.espessura_argila
@@ -234,13 +263,25 @@ def base_macho(p: Params, flor: Polygon) -> Manifold:
     return b
 
 
+def anel_segmento(ri: float, parede: float, aba: float, altura: float, n: int) -> Manifold:
+    """1/n de um anel de contenção, com abas para presilha nas duas pontas."""
+    ro = ri + parede
+    ang = 2 * math.pi / n
+    arco = np.linspace(0, ang, 256)
+    cunha = CrossSection([np.r_[[[0.0, 0.0]], np.c_[2 * ro * np.cos(arco), 2 * ro * np.sin(arco)]]])
+    anel = (CrossSection.circle(ro, 512) - CrossSection.circle(ri, 512)) ^ cunha
+    aba0 = CrossSection.square((ro - ri + aba, parede)).translate((ri, 0))
+    aba1 = CrossSection.square((ro - ri + aba, parede)).translate((ri, -parede)).rotate(math.degrees(ang))
+    return (anel + aba0 + aba1).extrude(altura)
+
+
 def anel_metade(p: Params) -> Manifold:
-    ri, ro = p.raio_anel, p.raio_anel + p.parede
-    anel = CrossSection.circle(ro, 512) - CrossSection.circle(ri, 512)
-    metade = anel ^ CrossSection.square((ro + 1, 2 * ro + 2)).translate((0, -ro - 1))
-    abas = (CrossSection.square((p.parede, ro - ri + p.aba_presilha)).translate((0, ri))
-            + CrossSection.square((p.parede, ro - ri + p.aba_presilha)).translate((0, -ro - p.aba_presilha)))
-    return (metade + abas).extrude(p.altura_anel)
+    return anel_segmento(p.raio_anel, p.parede, p.aba_presilha, p.altura_anel, 2)
+
+
+def anel_barbotina(p: Params) -> Manifold:
+    return anel_segmento(p.raio_anel_barbotina, p.parede, p.aba_presilha,
+                         p.altura_anel_barbotina, p.segmentos_anel_barbotina)
 
 
 def presilha(p: Params) -> Manifold:
@@ -294,11 +335,55 @@ def _topo(tm: trimesh.Trimesh, ang: float, rs: np.ndarray) -> np.ndarray:
     return z
 
 
-def preview(p: Params, pecas: dict[str, trimesh.Trimesh], caminho: str) -> None:
-    """Desenho em corte do molde pronto: fêmea embaixo, argila, macho em cima."""
+def _plt():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    return plt
+
+
+def corte_barbotina(p: Params, matriz: trimesh.Trimesh, caminho: str, parede_peca: float = 4.0) -> None:
+    """Desenho em corte do molde de colagem pronto (virado, boca para cima)."""
+    from shapely.geometry import LineString, box
+    plt = _plt()
+    R, H, S = p.raio_anel_barbotina, p.altura_anel_barbotina, p.altura_reservatorio
+    rs = np.linspace(-R + 0.5, R - 0.5, 2401)
+    t = np.maximum(_topo(matriz, 90, rs), 0)   # altura da matriz sobre a mesa
+    sup = -t                                    # molde virado: mesa vira a boca
+    gesso = Polygon(np.r_[np.c_[rs, sup], [[rs[-1], -H], [rs[0], -H]]]).buffer(0)
+    cavidade = box(rs[0], -H, rs[-1], 0).difference(gesso)
+    casca = cavidade.intersection(gesso.buffer(parede_peca, resolution=16))
+    peca = casca.intersection(box(-R, -H, R, -S))
+    sobra = casca.intersection(box(-R, -S, R, 0))
+
+    def pinta(ax, g, **kw):
+        for poly in getattr(g, "geoms", [g]):
+            if poly.geom_type == "Polygon" and not poly.is_empty:
+                x, y = poly.exterior.xy
+                ax.fill(x, y, **kw)
+                kw.pop("label", None)
+
+    fig, ax = plt.subplots(figsize=(11, 4.8), dpi=130)
+    pinta(ax, gesso, color="#e8e2d6", ec="#9c9284", lw=1, label="gesso – molde de colagem (1 peça)")
+    pinta(ax, peca, color="#b5653f", label=f"parede colada (~{parede_peca:g} mm) = o prato")
+    pinta(ax, sobra, color="#e0b49c", label="sobra do reservatório (aparar)")
+    ax.plot([-R, R], [-S, -S], color="#7a2e12", lw=0.8, ls="--")
+    ax.text(R * 0.99, -S + 1.2, "linha de corte (degrau)", ha="right", fontsize=8, color="#7a2e12")
+    ax.text(0, -S / 2, "reservatório: manter cheio de barbotina", ha="center", va="center", fontsize=8, color="#555")
+    ax.set_xlim(-R - 5, R + 5); ax.set_ylim(-H - 5, 25); ax.set_aspect("equal")
+    ax.set_xlabel("mm"); ax.set_yticks([])
+    ax.set_title("Corte do molde de colagem (barbotina) pronto para usar", fontsize=10)
+    ax.legend(loc="upper left", fontsize=8, frameon=False, ncol=3)
+    for s_ in ("top", "right", "left"):
+        ax.spines[s_].set_visible(False)
+    plt.tight_layout()
+    plt.savefig(caminho)
+    plt.close(fig)
+
+
+def corte_prensagem(p: Params, pecas: dict[str, trimesh.Trimesh], caminho: str) -> None:
+    """Desenho em corte do molde pronto: fêmea embaixo, argila, macho em cima."""
+    plt = _plt()
 
     R = p.raio_anel
     rs = np.linspace(-R + 0.5, R - 0.5, 1601)
@@ -338,45 +423,68 @@ def main() -> None:
         else:
             ap.add_argument(opt, type=type(valor), default=valor)
     ap.add_argument("--saida", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "stl"))
-    ap.add_argument("--preview", action="store_true", help="gera imagens/corte.png (desenho em corte)")
+    ap.add_argument("--preview", action="store_true", help="gera os desenhos em corte em imagens/")
     args = ap.parse_args()
     p = Params(**{k: getattr(args, k) for k in vars(p)})
 
     assert p.raio_vale < p.raio_petala
     assert p.largura_aba < p.raio_vale, "largura_aba grande demais para a flor"
     assert raio_chaves(p) + p.raio_chave < p.raio_anel - 3, "sem espaço para as chaves: aumente --raio-anel"
+    folga_lateral = p.raio_anel_barbotina - (p.raio_petala + p.degrau_corte
+                                             + p.altura_reservatorio * math.tan(math.radians(p.saida_reservatorio)))
+    if folga_lateral < 30:
+        print(f"AVISO: só {folga_lateral:.0f} mm de gesso ao lado das pétalas no molde de barbotina; "
+              "o ideal é 30–40 mm (aumente --raio-anel-barbotina).")
 
     flor = contorno_flor(p)
-    os.makedirs(args.saida, exist_ok=True)
 
+    def exporta(pasta: str, pecas: dict[str, Manifold]) -> dict[str, trimesh.Trimesh]:
+        os.makedirs(pasta, exist_ok=True)
+        print(f"\n[{os.path.basename(pasta)}]")
+        malhas = {}
+        for nome, m in pecas.items():
+            tm = para_trimesh(m)
+            assert tm.is_watertight, f"{nome} não está fechado"
+            tm.export(os.path.join(pasta, f"{nome}.stl"))
+            malhas[nome] = tm
+            dx, dy, dz = tm.extents
+            print(f"  {nome:17s} {dx:6.1f} x {dy:6.1f} x {dz:5.1f} mm   {len(tm.faces):7d} triângulos")
+        return malhas
+
+    def mostra_gesso(nome: str, v_ml: float) -> None:
+        g, a = receita(v_ml)
+        print(f"  Gesso para o molde {nome}: ~{v_ml/1000:.2f} L de mistura -> "
+              f"{g/1000:.2f} kg de gesso + {a/1000:.2f} L de água")
+
+    # ---- molde de colagem (barbotina)
+    mb = matriz_barbotina(p, flor)
+    barb = exporta(os.path.join(args.saida, "barbotina"), {
+        "matriz_barbotina": mb,
+        "anel_quarto" if p.segmentos_anel_barbotina == 4 else f"anel_1_de_{p.segmentos_anel_barbotina}": anel_barbotina(p),
+        "presilha": presilha(p),
+    })
+    cil = CrossSection.circle(p.raio_anel_barbotina, 256).extrude(p.altura_anel_barbotina)
+    mostra_gesso("de colagem", (cil - mb).volume() / 1000.0)
+
+    # ---- molde de prensagem
     fem = base_femea(p, flor)
     mac = base_macho(p, flor)
-    pecas = {
+    pren = exporta(os.path.join(args.saida, "prensagem"), {
         "base_femea": fem,
         "base_macho": mac,
         "anel_metade": anel_metade(p),
         "presilha": presilha(p),
-    }
-    malhas = {}
-    for nome, m in pecas.items():
-        tm = para_trimesh(m)
-        assert tm.is_watertight, f"{nome} não está fechado"
-        tm.export(os.path.join(args.saida, f"{nome}.stl"))
-        malhas[nome] = tm
-        dx, dy, dz = tm.extents
-        print(f"{nome:12s} {dx:6.1f} x {dy:6.1f} x {dz:5.1f} mm   {len(tm.faces):7d} triângulos")
-
+    })
     zmax_macho = p.profundidade - p.espessura_argila
     for nome, base, plug in (("fêmea", fem, p.altura_plug_femea), ("macho", mac, zmax_macho + 3)):
-        v = volume_gesso_ml(p, base, plug)
-        g, a = receita(v)
-        print(f"Gesso para o molde {nome}: ~{v/1000:.2f} L de mistura -> {g/1000:.2f} kg de gesso + {a/1000:.2f} L de água")
+        mostra_gesso(nome, volume_gesso_ml(p, base, plug))
 
     if args.preview:
-        destino = os.path.join(os.path.dirname(args.saida), "imagens", "corte.png")
-        os.makedirs(os.path.dirname(destino), exist_ok=True)
-        preview(p, malhas, destino)
-        print("imagens/corte.png gerado")
+        pasta = os.path.join(os.path.dirname(args.saida), "imagens")
+        os.makedirs(pasta, exist_ok=True)
+        corte_barbotina(p, barb["matriz_barbotina"], os.path.join(pasta, "corte_barbotina.png"))
+        corte_prensagem(p, pren, os.path.join(pasta, "corte_prensagem.png"))
+        print("\nimagens/corte_barbotina.png e imagens/corte_prensagem.png gerados")
 
 
 if __name__ == "__main__":
