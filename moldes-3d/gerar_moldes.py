@@ -93,6 +93,9 @@ class Params:
     espessura_cabeca_pino: float = 3.0
     saliencia_pino: float = 0.2         # o pino passa um tiquinho da superfície
 
+    # Sapata na base dos anéis (melhora a aderência na mesa da impressora)
+    sapata_anel: float = 8.0
+
     # Marca da escola gravada na parede externa do gesso
     logo: bool = True
     logo_arquivo: str = ""               # vazio = marca/logo.png se existir, senão fonte Barrio
@@ -307,25 +310,36 @@ def base_macho(p: Params, flor: Polygon) -> Manifold:
     return b
 
 
-def anel_segmento(ri: float, parede: float, aba: float, altura: float, n: int) -> Manifold:
-    """1/n de um anel de contenção, com abas para presilha nas duas pontas."""
+def anel_segmento(ri: float, parede: float, aba: float, altura: float, n: int,
+                  sapata: float = 0.0) -> Manifold:
+    """1/n de um anel de contenção, com abas para presilha nas duas pontas.
+
+    sapata > 0: aba de apoio para FORA na base (mm). Aumenta a área que gruda
+    na mesa da impressora (a parede sozinha tem só 4 mm) e não atrapalha o
+    encaixe na base nem o gesso, porque fica do lado de fora."""
     ro = ri + parede
     ang = 2 * math.pi / n
     arco = np.linspace(0, ang, 256)
-    cunha = CrossSection([np.r_[[[0.0, 0.0]], np.c_[2 * ro * np.cos(arco), 2 * ro * np.sin(arco)]]])
+    cunha = CrossSection([np.r_[[[0.0, 0.0]], np.c_[2 * (ro + sapata + aba) * np.cos(arco),
+                                                    2 * (ro + sapata + aba) * np.sin(arco)]]])
     anel = (CrossSection.circle(ro, 512) - CrossSection.circle(ri, 512)) ^ cunha
     aba0 = CrossSection.square((ro - ri + aba, parede)).translate((ri, 0))
     aba1 = CrossSection.square((ro - ri + aba, parede)).translate((ri, -parede)).rotate(math.degrees(ang))
-    return (anel + aba0 + aba1).extrude(altura)
+    seg = (anel + aba0 + aba1).extrude(altura)
+    if sapata > 0:
+        pe = (CrossSection.circle(ro + sapata, 512) - CrossSection.circle(ri, 512)) ^ cunha
+        reforco = (CrossSection.circle(ro + sapata * 0.4, 512) - CrossSection.circle(ri, 512)) ^ cunha
+        seg = seg + pe.extrude(2.0) + reforco.extrude(5.0)      # sapata de 2 mm + degrau de reforço
+    return seg
 
 
 def anel_metade(p: Params) -> Manifold:
-    return anel_segmento(p.raio_anel, p.parede, p.aba_presilha, p.altura_anel, 2)
+    return anel_segmento(p.raio_anel, p.parede, p.aba_presilha, p.altura_anel, 2, p.sapata_anel)
 
 
 def anel_barbotina(p: Params) -> Manifold:
     return anel_segmento(p.raio_anel_barbotina, p.parede, p.aba_presilha,
-                         p.altura_anel_barbotina, p.segmentos_anel_barbotina)
+                         p.altura_anel_barbotina, p.segmentos_anel_barbotina, p.sapata_anel)
 
 
 def com_logo(p: Params, anel: Manifold, raio: float, ang: float, z_c: float, largura: float) -> Manifold:

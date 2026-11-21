@@ -69,6 +69,7 @@ class ParamsCopo:
     espessura_base: float = 3.0
     altura_plug: float = 4.0
     segmentos_anel: int = 4
+    sapata_anel: float = 8.0       # aba de apoio para fora na base do anel (aderência na impressora)
     espessura_casca: float = 3.5   # parede da matriz oca
 
     # Canal + pino de desmoldagem (tubo central da matriz)
@@ -206,7 +207,7 @@ def pino(p: ParamsCopo) -> Manifold:
 
 def anel_copo(p: ParamsCopo) -> Manifold:
     g = geometria(p)
-    return anel_segmento(g["R_in"], p.parede, p.aba_presilha, g["altura_anel"], p.segmentos_anel)
+    return anel_segmento(g["R_in"], p.parede, p.aba_presilha, g["altura_anel"], p.segmentos_anel, p.sapata_anel)
 
 
 def anel_copo_logo(p: ParamsCopo) -> tuple[Manifold, str]:

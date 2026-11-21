@@ -64,6 +64,14 @@ Copo com **fundo bem arredondado**, paredes que abrem levemente até a boca e **
 - A matriz vai com a aba na mesa, sem suportes. Use camada de 0,12–0,16 mm e 3–4 perímetros. O preenchimento quase não importa, porque a matriz já é oca.
 - **Lixe bem** a parte do copo e passe primer e verniz: a barbotina copia tudo.
 - O anel tem 194 mm de altura. A impressora precisa ter pelo menos 200 mm de altura útil.
+- **O anel tem uma sapata:** uma aba de 8 mm para fora na base, só para grudar melhor na mesa. Ela fica do lado de fora e não atrapalha o encaixe nem o gesso. A presilha de baixo fica logo acima dela.
+- **Se a peça soltar da mesa** (testado em Ender 3 V3 KE com PLA):
+    - lave a chapa PEI com detergente e passe álcool isopropílico;
+    - mesa a 65 °C e bico a 210 °C (215 °C na primeira camada);
+    - **velocidade geral de 80–100 mm/s e aceleração de 2000–3000 mm/s²** (o perfil padrão rápido derruba peças altas e finas);
+    - primeira camada a 20 mm/s e 0,25 mm de altura, ventoinha desligada nas 3 primeiras camadas;
+    - **brim de 8 mm**;
+    - ajuste o Z-offset até a primeira camada sair achatada como uma fita.
 - **Pino:** imprima em pé, com a cabeça na mesa, devagar e com 100% de preenchimento.
 - **Alternativa ao pino:** uma **cavilha de madeira de 6 mm** cortada com 163 mm, ou uma vareta de 6 mm. Outra opção é tampar o furo do fundo, por fora, com uma bolinha de massinha bem rente. Na hora de desmoldar, o ar da seringa empurra a massinha.
 - Passe uma broca de 6 mm no tubo central, de baixo para cima.
