@@ -2,7 +2,9 @@
 
 *Escola de cerâmica Barro na Veia*
 
-Caneca de corpo quase reto, com fundo em "U". Ela tem uma **alça em bloco**, grossa, com um **furo em "D"** para o dedo. A parede do corpo **afunda em volta do furo**, como uma concha, igual à das fotos de referência.
+Caneca de corpo quase reto, com fundo em "U". Ela tem uma **alça em bloco**, grossa, com um **furo em "D"** para o dedo.
+
+Igual às fotos de referência, a parede do corpo **afunda em volta do furo, formando uma concha curva e macia**, maior que o furo. O lado curvo do furo é a própria concha. Por dentro, a parede acompanha e forma a **barriga interna**.
 
 ## Medidas
 
@@ -12,26 +14,28 @@ O molde é **20% maior** que a caneca pronta, para compensar a retração da bar
 |---|---|---|
 | Altura | **10 cm** | 12 cm |
 | Capacidade (até a borda) | **300 ml** | – |
-| Diâmetro do corpo | 7,5 cm | 8,9 cm |
-| Largura com a alça | 9,8 cm | 11,7 cm |
+| Diâmetro do corpo | 7,5 cm | 9,0 cm |
+| Largura com a alça | 9,7 cm | 11,6 cm |
 | Grossura da alça | 2,2 cm | 2,6 cm |
 | Furo da alça | 2,0 × 4,6 cm | 2,4 × 5,5 cm |
 
-O diâmetro do corpo foi calculado para dar exatamente 300 ml com 10 cm de altura, já descontando o afundado em volta do furo.
+O diâmetro do corpo foi calculado para dar exatamente 300 ml com 10 cm de altura, já descontando a barriga interna.
 
 | A caneca de dois lados | De frente para a alça |
 |---|---|
 | ![Caneca](imagens/caneca_peca.png) | ![Frente](imagens/caneca_frente.png) |
 
+![Caneca cortada ao meio: a barriga interna no lado da alça](imagens/caneca_dentro.png)
+
 ## Como é o molde
 
 É **um molde só, de 2 metades**, divididas pelo meio da alça.
 - **Furo:** cada metade forma metade do furo, e as duas se encontram no meio.
-- **Afundado em volta do furo:** é reto, na direção em que as metades abrem, então **não prende** o gesso.
+- **Concha em volta do furo:** a parede só recua conforme se afasta do meio da alça, na direção em que as metades abrem, então **não prende** o gesso.
 - **Encaixe:** as metades encaixam por 4 chaves de registro.
 - **Marca:** cada metade sai com o **logo Barro na Veia** gravado na lateral.
 
-Montado, o molde forma um bloco de **14 × 16,8 × 16,5 cm**.
+Montado, o molde forma um bloco de **14,2 × 16,8 × 16,5 cm**.
 
 ## Peças (pasta `stl/caneca/`)
 
@@ -39,12 +43,12 @@ Montado, o molde forma um bloco de **14 × 16,8 × 16,5 cm**.
 
 | Arquivo | Imprimir | O que é | Tamanho (mm) |
 |---|---|---|---|
-| `bandeja_A.stl` | 1x | Meia caneca deitada com meia alça, reservatório, 4 **bolinhas** de encaixe e canal de ar. Gera a **metade A**. | 182 × 179 × 55 |
-| `bandeja_B.stl` | 1x | Igual, com 4 **covinhas** de encaixe. Gera a **metade B**. | 182 × 179 × 55 |
-| `moldura_U.stl` | 1x | Metade da moldura que cerca a bandeja. | 196 × 87 × 74 |
-| `moldura_U_logo.stl` | 1x | A outra metade, com o **logo** em relevo por dentro. | 196 × 87 × 74 |
+| `bandeja_A.stl` | 1x | Meia caneca deitada com meia alça, reservatório, 4 **bolinhas** de encaixe e canal de ar. Gera a **metade A**. | 182 × 179 × 56 |
+| `bandeja_B.stl` | 1x | Igual, com 4 **covinhas** de encaixe. Gera a **metade B**. | 182 × 179 × 56 |
+| `moldura_U.stl` | 1x | Metade da moldura que cerca a bandeja. | 196 × 87 × 75 |
+| `moldura_U_logo.stl` | 1x | A outra metade, com o **logo** em relevo por dentro. | 196 × 87 × 75 |
 | `presilha.stl` | 4x | Trava as duas metades da moldura. | 14 × 13 × 20 |
-| `pino.stl` | 2x | Tampa o canal de ar das bandejas. | Ø 16 × 43 |
+| `pino.stl` | 2x | Tampa o canal de ar das bandejas. | Ø 16 × 44 |
 
 `peca_caneca_conferencia.stl` é só a caneca pronta, para conferir o formato. Não precisa imprimir.
 
@@ -95,6 +99,7 @@ Faça uma metade de cada vez: primeiro com a `bandeja_A`, depois com a `bandeja_
 python3 gerar_caneca.py --altura 90 --capacidade 250       # outra caneca
 python3 gerar_caneca.py --alca-espessura 18 --alca-espessura-base 18   # alça mais fina (enche mais fácil)
 python3 gerar_caneca.py --furo-altura 50 --furo-largura 22             # furo maior
+python3 gerar_caneca.py --concha-fundura 12 --concha-maciez 6         # concha mais funda e mais macia
 python3 gerar_caneca.py --aumento 15                                   # outra retração
 python3 gerar_caneca.py --help
 ```
