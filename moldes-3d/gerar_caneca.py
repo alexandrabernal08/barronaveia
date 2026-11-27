@@ -37,24 +37,28 @@ from marca import relevo_local
 @dataclass
 class ParamsCaneca:
     # Peça QUEIMADA (como fica pronta)
-    altura: float = 100.0          # mm
-    capacidade: float = 300.0      # ml até a borda
-    parede_peca: float = 4.5       # parede da peça queimada (só para calcular a capacidade)
+    altura: float = 80.0           # mm (medida da foto)
+    largura_total: float = 77.0    # mm, corpo + alça (medida da foto)
+    capacidade: float = 180.0      # ml até a borda (medida da foto)
+    parede_peca: float = 4.0       # parede da peça queimada (só para calcular a capacidade)
     afina_boca: float = 1.0        # raio da boca / raio do corpo
-    raio_fundo: float = 24.0       # arredondado do fundo (formato de "U")
-    # Alça em bloco (peça queimada)
-    alca_espessura: float = 22.0   # grossura da alça (igual à da foto)
+    raio_fundo: float = 18.0       # arredondado do fundo (formato de "U")
+    # Alça em bloco (peça queimada). Ela quase não sai do corpo: a largura total já a inclui.
+    alca_espessura: float = 22.0   # grossura da alça
     alca_espessura_base: float = 22.0  # grossura onde a alça nasce do corpo
-    alca_barra: float = 12.0       # largura da barra de fora da alça (onde se segura)
-    alca_base: float = 0.14        # início da alça (fração da altura)
-    alca_topo_folga: float = 0.0   # 0 = topo da alça rente à borda
-    furo_largura: float = 20.0     # largura do furo em "D"
-    furo_altura: float = 46.0
-    concha_fundura: float = 10.0   # quanto a parede afunda em volta do furo (a "concha" da foto)
-    concha_altura: float = 66.0    # altura da concha (maior que o furo)
-    concha_maciez: float = 4.0     # quanto mais, mais macia a borda da concha
-    furo_centro: float = 0.55      # altura do centro do furo (fração da altura)
-    arredonda: float = 5.0         # arredondado das quinas da alça
+    alca_barra: float = 8.0        # barra de fora (onde se segura), arredondada
+    alca_base: float = 0.05        # a alça desce até perto do fundo, acompanhando o "U"
+    alca_topo_folga: float = 0.0   # 0 = topo da alça rente à borda (topo reto, como na foto)
+    furo_altura: float = 40.0      # furo em "D", lado reto para fora
+    furo_centro: float = 0.52      # altura do centro do furo (fração da altura)
+    rampa_fundura: float = 3.0     # arredonda o "lábio" em volta do furo (vista de frente)
+    rampa_largura: float = 8.0
+    labio_furo: float = 4.0        # borda de alça que contorna o lado curvo do furo
+    sulco_extra: float = 10.0      # quanto o sulco em meia-lua passa acima e abaixo do furo
+    concha_fundura: float = 13.0   # quanto o furo entra no corpo
+    concha_altura: float = 72.0    # o sulco vai de perto da borda até perto do fundo
+    concha_maciez: float = 3.0     # quanto mais, mais macia a borda do sulco
+    arredonda: float = 3.5         # arredondado das quinas da alça
     # Molde
     aumento: float = 20.0          # % — molde maior que a peça queimada (retração da barbotina)
     altura_reservatorio: float = 20.0
@@ -116,20 +120,35 @@ def escala(p: ParamsCaneca) -> float:
     return 1.0 + p.aumento / 100.0
 
 
-def saliencia(p: ParamsCaneca) -> float:
-    """Quanto a alça sai além do corpo."""
-    return p.furo_largura - p.concha_fundura + p.alca_barra
+def saliencia(p: ParamsCaneca, R: float | None = None) -> float:
+    """Quanto a alça sai além do corpo (vem da largura total da foto)."""
+    return p.largura_total - 2 * (raio_corpo(p) if R is None else R)
+
+
+def furo_largura(p: ParamsCaneca, R: float | None = None) -> float:
+    """Largura visível do furo: do fundo da concha até a barra de fora."""
+    return saliencia(p, R) - p.alca_barra + p.concha_fundura
+
+
+def furo_d(p: ParamsCaneca, R: float) -> tuple[float, float, float, float]:
+    """Furo em "D": (x do lado reto, z do centro, meia largura a, meia altura b).
+    O lado curvo é meia elipse; a ponta encosta no fundo da concha."""
+    a = furo_largura(p, R)
+    x_out = R - p.concha_fundura + a
+    return x_out, p.furo_centro * p.altura, a, p.furo_altura / 2
 
 
 # ---- concha: o corpo afunda em volta do furo (curva e macia, como na foto) ----
 def x_concha(p: ParamsCaneca, R: float, z: np.ndarray, recuo: float = 0.0) -> np.ndarray:
     """Até onde a parede vai, na direção da alça, em cada altura (a 'concha').
     Fora da concha devolve um valor alto (não corta nada)."""
-    zc = p.furo_centro * p.altura
-    hz = p.concha_altura / 2
-    u = np.clip(1 - ((z - zc) / hz) ** 2, 0, 1)
-    f = u ** 1.3                                        # 1 no centro, 0 nas pontas, sem quina
-    return R - recuo - p.concha_fundura * f + 60 * (1 - f) ** 3
+    # o sulco acompanha o lado curvo do furo por fora, deixando um "lábio" de alça em volta
+    # do furo, e continua acima e abaixo dele (meia-lua grande, como nas fotos)
+    x_out, zc, a, b = furo_d(p, R)
+    w = p.labio_furo
+    u = np.clip(1 - ((z - zc) / (b + w + p.sulco_extra)) ** 2, 0, 1)
+    xs = x_out - (a + w) * np.sqrt(u) + 40 * (1 - u) ** 6       # contínuo: some suave nas pontas
+    return xs - recuo
 
 
 def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0) -> Manifold:
@@ -147,6 +166,28 @@ def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0) -> Manifo
         smin = k * (mn - np.log(np.exp(-(a - mn)) + np.exp(-(b - mn))))
         nx = np.where(x > 0, np.minimum(x, smin), x)
         return np.c_[nx, y, z]
+
+    return m.warp_batch(f)
+
+
+def escareia(p: ParamsCaneca, m: Manifold, R: float) -> Manifold:
+    """Rampa em meia-lua em volta do lado curvo do furo, nas DUAS faces (a que se vê de
+    frente nas fotos): a superfície desce suavemente até a boca do furo.
+    Cada rampa abre para o lado em que a sua metade do molde sai, então não prende."""
+    x_out, zc, a, b = furo_d(p, R)
+    d0, faixa = p.rampa_fundura, p.rampa_largura
+    meia = p.alca_espessura / 2
+    m = m.refine_to_length(0.9)
+
+    def f(v: np.ndarray) -> np.ndarray:
+        x, y, z = v[:, 0], v[:, 1], v[:, 2]
+        rho = np.sqrt(((np.minimum(x, x_out) - x_out) / a) ** 2 + ((z - zc) / b) ** 2)
+        dist = np.maximum(rho - 1, 0) * min(a, b)                 # distância aproximada da borda curva
+        prof = d0 * np.clip(1 - dist / faixa, 0, 1) ** 1.6
+        t = np.clip((x_out - 1.0 - x) / 7.0, 0, 1)
+        prof = prof * t * t * (3 - 2 * t)                          # some suave na barra de fora (fica lisa)
+        fi = np.minimum(np.abs(y) / meia, 1.0)                     # 0 no meio da alça, 1 nas faces
+        return np.c_[x, y - np.sign(y) * prof * fi, z]
 
     return m.warp_batch(f)
 
@@ -180,7 +221,7 @@ def raio_corpo(p: ParamsCaneca) -> float:
     chave = tuple(sorted(vars(p).items()))
     if chave in _cache_raio:
         return _cache_raio[chave]
-    lo, hi = 25.0, 70.0
+    lo, hi = 18.0, 70.0
     for _ in range(18):
         mid = (lo + hi) / 2
         if capacidade_ml(p, mid, 64) < p.capacidade:
@@ -196,15 +237,15 @@ def forma_alca_2d(p: ParamsCaneca, R: float):
     curvo dele é a própria concha do corpo (como na foto)."""
     H = p.altura
     z0, z1 = p.alca_base * H, H - p.alca_topo_folga
-    x_out = R - p.concha_fundura + p.furo_largura              # lado reto do furo (de fora)
+    x_out, _, a_furo, _ = furo_d(p, R)                         # lado reto do furo (de fora)
     xo = x_out + p.alca_barra
     z1 = z1 + p.arredonda + 2                                  # passa da borda; é aparado depois
     bloco = box(R - 30, z0, xo, z1)                             # a parte de dentro some no corpo
-    r = 16.0
+    r = 18.0
     bloco = bloco.buffer(-r, join_style=1).buffer(r, join_style=1).union(box(R - 30, z0 + r, R - 12, z1 - r))
     zc = p.furo_centro * H
     from shapely.affinity import scale, translate
-    elipse = translate(scale(Point(0, 0).buffer(1, resolution=96), p.furo_largura + 16, p.furo_altura / 2,
+    elipse = translate(scale(Point(0, 0).buffer(1, resolution=128), a_furo + 1.0, p.furo_altura / 2,
                              origin=(0, 0)), x_out, zc)
     furo = elipse.intersection(box(R - 40, zc - p.furo_altura, x_out, zc + p.furo_altura))
     furo = furo.buffer(-3, join_style=1).buffer(3, join_style=1)
@@ -239,7 +280,7 @@ def peca(p: ParamsCaneca, com_reservatorio: bool = False, oca: bool = False) -> 
     cs = CrossSection([np.asarray(nucleo.exterior.coords)[:-1]], FillRule.EvenOdd)
     lam = cs.extrude(p.alca_espessura_base - 2 * f).translate((0, 0, -(p.alca_espessura_base - 2 * f) / 2))
     lam = lam.rotate((90, 0, 0))                                   # plano xz, espessura em y
-    xo = R + saliencia(p)
+    xo = R + saliencia(p, R)
     hb = max(p.alca_espessura_base / 2 - f, 0.5)
     ho = max(p.alca_espessura / 2 - f, 0.5)
     cunha = CrossSection([np.array([[R - 32, -hb], [xo + 1, -ho], [xo + 1, ho], [R - 32, hb]])])
@@ -248,10 +289,22 @@ def peca(p: ParamsCaneca, com_reservatorio: bool = False, oca: bool = False) -> 
     lam = lam - prisma_furo(p, R, furo.buffer(f, join_style=1))
     alca = lam.minkowski_sum(Manifold.sphere(f, 32)).trim_by_plane((0, 0, -1), -H)   # topo rente à borda
     alca = alca - prisma_furo(p, R, furo)                          # garante o furo aberto até a concha
+    # a alça não pode preencher o sulco: corta a parte de dentro dela pela linha do sulco
+    zz = np.linspace(0, H + 5, 240)
+    xs = x_concha(p, R, zz) - p.concha_maciez * math.log(2)   # acompanha a curva suave do corpo
+    dentro_sulco = xs < R + saliencia(p, R) - 1
+    if dentro_sulco.any():
+        zs_, xs_ = zz[dentro_sulco], xs[dentro_sulco]
+        poli = np.r_[np.c_[xs_, zs_], [[R - 45, zs_[-1]], [R - 45, zs_[0]]]]
+        if Polygon(poli).exterior.is_ccw is False:
+            poli = poli[::-1]
+        corte = CrossSection([poli]).extrude(2 * p.alca_espessura_base).translate(
+            (0, 0, -p.alca_espessura_base)).rotate((90, 0, 0))
+        alca = alca - corte
     m = corpo + alca
     if oca:
         m = m - interno(p, R, p.segmentos)
-    return m
+    return escareia(p, m, R)
 
 
 # --------------------------------------------------------------------------

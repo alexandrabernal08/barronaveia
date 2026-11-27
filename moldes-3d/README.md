@@ -11,7 +11,7 @@ Matrizes impressas em 3D para fazer moldes de gesso para cerâmica:
 
 > **Copinho barrigudo com covinha** (molde de 2 partes para barbotina, pasta `stl/copinho/`, gerador `gerar_copinho.py`): veja [GUIA_COPINHO.md](GUIA_COPINHO.md) · [PDF](GUIA_COPINHO.pdf).
 
-> **Caneca com alça de furo** (10 cm, 300 ml, molde de 2 partes, pasta `stl/caneca/`, gerador `gerar_caneca.py`): veja [GUIA_CANECA.md](GUIA_CANECA.md) · [PDF](GUIA_CANECA.pdf).
+> **Caneca com alça de furo** (8 cm, 180 ml, molde de 2 partes, pasta `stl/caneca/`, gerador `gerar_caneca.py`): veja [GUIA_CANECA.md](GUIA_CANECA.md) · [PDF](GUIA_CANECA.pdf).
 
 ## Marca da escola gravada no gesso
 

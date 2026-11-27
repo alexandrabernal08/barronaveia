@@ -8,22 +8,28 @@ Igual às fotos de referência, a parede do corpo **afunda em volta do furo, for
 
 ## Medidas
 
-O molde é **20% maior** que a caneca pronta, para compensar a retração da barbotina.
+Medidas da caneca da foto de referência: **8 cm de altura, 7,7 cm de largura com a alça e 180 ml**. O molde é **20% maior**, para compensar a retração da barbotina.
 
 | | Caneca pronta (queimada) | Peça que sai do molde (crua) |
 |---|---|---|
-| Altura | **10 cm** | 12 cm |
-| Capacidade (até a borda) | **300 ml** | – |
-| Diâmetro do corpo | 7,5 cm | 9,0 cm |
-| Largura com a alça | 9,7 cm | 11,6 cm |
+| Altura | **8,0 cm** | 9,6 cm |
+| Largura com a alça | **7,7 cm** | 9,2 cm |
+| Capacidade (até a borda) | **180 ml** | – |
+| Diâmetro do corpo | 6,9 cm | 8,2 cm |
 | Grossura da alça | 2,2 cm | 2,6 cm |
-| Furo da alça | 2,0 × 4,6 cm | 2,4 × 5,5 cm |
+| Furo em "D" | ~1,3 × 4,0 cm | ~1,6 × 4,8 cm |
 
-O diâmetro do corpo foi calculado para dar exatamente 300 ml com 10 cm de altura, já descontando a barriga interna.
+O diâmetro do corpo foi calculado para dar 180 ml com 8 cm de altura, já contando a barriga interna.
 
-| A caneca de dois lados | De frente para a alça |
-|---|---|
-| ![Caneca](imagens/caneca_peca.png) | ![Frente](imagens/caneca_frente.png) |
+### Como é a alça (igual às fotos)
+
+- **Alça em bloco:** ela quase não sai do corpo, porque a largura total da caneca já a inclui. O topo fica rente à borda, e a barra de fora é arredondada.
+- **Furo em "D":** lado reto para fora e lado curvo redondo, entrando fundo no corpo.
+- **Lábio:** uma borda arredondada da alça contorna o lado curvo do furo.
+- **Sulco em meia-lua:** em volta do lábio, o corpo afunda num sulco que vai de perto da borda até perto do fundo.
+- **Barriga interna:** a parede de dentro acompanha o sulco e avança para dentro no lado da alça.
+
+![Sua foto ao lado do modelo, no mesmo ângulo](imagens/caneca_comparacao.png)
 
 ![Caneca cortada ao meio: a barriga interna no lado da alça](imagens/caneca_dentro.png)
 
@@ -35,7 +41,7 @@ O diâmetro do corpo foi calculado para dar exatamente 300 ml com 10 cm de altur
 - **Encaixe:** as metades encaixam por 4 chaves de registro.
 - **Marca:** cada metade sai com o **logo Barro na Veia** gravado na lateral.
 
-Montado, o molde forma um bloco de **14,2 × 16,8 × 16,5 cm**.
+Montado, o molde forma um bloco de **13,4 × 14,4 × 14,1 cm**.
 
 ## Peças (pasta `stl/caneca/`)
 
@@ -43,12 +49,12 @@ Montado, o molde forma um bloco de **14,2 × 16,8 × 16,5 cm**.
 
 | Arquivo | Imprimir | O que é | Tamanho (mm) |
 |---|---|---|---|
-| `bandeja_A.stl` | 1x | Meia caneca deitada com meia alça, reservatório, 4 **bolinhas** de encaixe e canal de ar. Gera a **metade A**. | 182 × 179 × 56 |
-| `bandeja_B.stl` | 1x | Igual, com 4 **covinhas** de encaixe. Gera a **metade B**. | 182 × 179 × 56 |
-| `moldura_U.stl` | 1x | Metade da moldura que cerca a bandeja. | 196 × 87 × 75 |
-| `moldura_U_logo.stl` | 1x | A outra metade, com o **logo** em relevo por dentro. | 196 × 87 × 75 |
+| `bandeja_A.stl` | 1x | Meia caneca deitada com meia alça, reservatório, 4 **bolinhas** de encaixe e canal de ar. Gera a **metade A**. | 158 × 155 × 52 |
+| `bandeja_B.stl` | 1x | Igual, com 4 **covinhas** de encaixe. Gera a **metade B**. | 158 × 155 × 52 |
+| `moldura_U.stl` | 1x | Metade da moldura que cerca a bandeja. | 172 × 74 × 71 |
+| `moldura_U_logo.stl` | 1x | A outra metade, com o **logo** em relevo por dentro. | 172 × 74 × 71 |
 | `presilha.stl` | 4x | Trava as duas metades da moldura. | 14 × 13 × 20 |
-| `pino.stl` | 2x | Tampa o canal de ar das bandejas. | Ø 16 × 44 |
+| `pino.stl` | 2x | Tampa o canal de ar das bandejas. | Ø 16 × 39 |
 
 `peca_caneca_conferencia.stl` é só a caneca pronta, para conferir o formato. Não precisa imprimir.
 
@@ -70,7 +76,7 @@ Faça uma metade de cada vez: primeiro com a `bandeja_A`, depois com a `bandeja_
     - Vede as emendas por fora com argila.
     - Vede também a junção da caneca com a parede da moldura, do lado do reservatório.
     - Passe desmoldante em tudo, inclusive no furo da alça e nas letras do logo.
-4. **Gesso:** consistência 70 (70 de água para 100 de gesso). **Por metade:** ~1,55 kg de gesso e ~1,1 L de água.
+4. **Gesso:** consistência 70 (70 de água para 100 de gesso). **Por metade:** ~1,1 kg de gesso e ~0,75 L de água.
     1. Despeje pela lateral até a borda da moldura.
     2. Bata na mesa para subir as bolhas.
 5. **Desmolde:**
@@ -96,10 +102,10 @@ Faça uma metade de cada vez: primeiro com a `bandeja_A`, depois com a `bandeja_
 ## Outros tamanhos
 
 ```bash
-python3 gerar_caneca.py --altura 90 --capacidade 250       # outra caneca
+python3 gerar_caneca.py --altura 100 --largura-total 98 --capacidade 300   # caneca maior
 python3 gerar_caneca.py --alca-espessura 18 --alca-espessura-base 18   # alça mais fina (enche mais fácil)
-python3 gerar_caneca.py --furo-altura 50 --furo-largura 22             # furo maior
-python3 gerar_caneca.py --concha-fundura 12 --concha-maciez 6         # concha mais funda e mais macia
+python3 gerar_caneca.py --furo-altura 46                                # furo mais alto
+python3 gerar_caneca.py --labio-furo 5 --sulco-extra 12 --concha-maciez 4   # lábio e sulco
 python3 gerar_caneca.py --aumento 15                                   # outra retração
 python3 gerar_caneca.py --help
 ```
