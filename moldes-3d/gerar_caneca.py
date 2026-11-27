@@ -43,15 +43,16 @@ class ParamsCaneca:
     afina_boca: float = 1.0        # raio da boca / raio do corpo
     raio_fundo: float = 24.0       # arredondado do fundo (formato de "U")
     # Alça em bloco (peça queimada)
-    alca_saliencia: float = 32.0   # quanto a alça sai do corpo
-    alca_espessura: float = 12.0   # grossura da alça na parte de fora
-    alca_espessura_base: float = 19.0  # grossura onde a alça nasce do corpo (afina para fora)
-    alca_base: float = 0.18        # início da alça (fração da altura)
+    alca_espessura: float = 22.0   # grossura da alça (igual à da foto)
+    alca_espessura_base: float = 22.0  # grossura onde a alça nasce do corpo
+    alca_barra: float = 12.0       # largura da barra de fora da alça (onde se segura)
+    alca_base: float = 0.14        # início da alça (fração da altura)
     alca_topo_folga: float = 0.0   # 0 = topo da alça rente à borda
-    furo_largura: float = 20.0
-    furo_altura: float = 40.0
-    furo_centro: float = 0.56      # altura do centro do furo (fração da altura)
-    arredonda: float = 3.5         # arredondado das quinas da alça
+    furo_largura: float = 20.0     # largura do furo em "D"
+    furo_altura: float = 46.0
+    furo_entra: float = 9.0        # quanto o furo entra no corpo (a parede afunda em volta, como na foto)
+    furo_centro: float = 0.55      # altura do centro do furo (fração da altura)
+    arredonda: float = 5.0         # arredondado das quinas da alça
     # Molde
     aumento: float = 20.0          # % — molde maior que a peça queimada (retração da barbotina)
     altura_reservatorio: float = 20.0
@@ -106,15 +107,46 @@ def volume_interno_ml(p: ParamsCaneca, R: float) -> float:
     return Manifold.revolve(CrossSection([xy]), 128).volume() / 1000.0
 
 
+_cache_raio: dict = {}
+
+
+def interno(p: ParamsCaneca, R: float) -> Manifold:
+    pts = contorno_corpo(p, R)
+    reg = Polygon(pts + [(0, p.altura)]).buffer(0)
+    dentro = reg.buffer(-p.parede_peca, join_style=1).union(
+        box(0, p.altura - 10, pts[-1][0] - p.parede_peca, p.altura + 5)).intersection(box(0, 0, 1e3, p.altura))
+    xy = np.asarray(dentro.exterior.coords)[:-1]
+    xy[:, 0] = np.maximum(xy[:, 0], 0)
+    if not dentro.exterior.is_ccw:
+        xy = xy[::-1]
+    return Manifold.revolve(CrossSection([xy]), 128)
+
+
+def capacidade_ml(p: ParamsCaneca, R: float) -> float:
+    """Volume interno até a borda, descontando o afundado da parede em volta do furo
+    (a parede acompanha o afundado, então o interior perde mais ou menos esse volume)."""
+    v = interno(p, R)
+    return (v.volume() - (v ^ prisma_furo(p, R)).volume()) / 1000.0
+
+
 def raio_corpo(p: ParamsCaneca) -> float:
+    chave = tuple(sorted(vars(p).items()))
+    if chave in _cache_raio:
+        return _cache_raio[chave]
     lo, hi = 20.0, 80.0
-    for _ in range(40):
+    for _ in range(30):
         mid = (lo + hi) / 2
-        if volume_interno_ml(p, mid) < p.capacidade:
+        if capacidade_ml(p, mid) < p.capacidade:
             lo = mid
         else:
             hi = mid
-    return (lo + hi) / 2
+    _cache_raio[chave] = (lo + hi) / 2
+    return _cache_raio[chave]
+
+
+def saliencia(p: ParamsCaneca) -> float:
+    """Quanto a alça sai além do corpo."""
+    return p.furo_largura - p.furo_entra + p.alca_barra
 
 
 def escala(p: ParamsCaneca) -> float:
@@ -128,15 +160,15 @@ def forma_alca_2d(p: ParamsCaneca, R: float) -> Polygon:
     """Contorno da alça visto de lado (plano xz), já com o furo."""
     H = p.altura
     z0, z1 = p.alca_base * H, H - p.alca_topo_folga
-    xo = R + p.alca_saliencia
+    x_in = R - p.furo_entra                                     # o furo entra no corpo
+    x_out = x_in + p.furo_largura
+    xo = x_out + p.alca_barra
     z1 = z1 + p.arredonda + 2                                  # passa da borda; é aparado depois
-    bloco = box(R - 12, z0, xo, z1)
+    bloco = box(R - 30, z0, xo, z1)                             # a parte de dentro some no corpo
     r = 16.0
-    bloco = bloco.buffer(-r, join_style=1).buffer(r, join_style=1).union(box(R - 12, z0 + r, R, z1 - r))
+    bloco = bloco.buffer(-r, join_style=1).buffer(r, join_style=1).union(box(R - 30, z0 + r, R - 12, z1 - r))
     # furo em "D": lado reto para fora, lado curvo encostado no corpo
     zc = p.furo_centro * H
-    x_out = xo - (p.alca_saliencia - p.furo_largura - 1.0)        # barra externa da alça
-    x_in = x_out - p.furo_largura
     elipse = Point(0, 0).buffer(1, resolution=64)
     from shapely.affinity import scale, translate
     elipse = translate(scale(elipse, p.furo_largura, p.furo_altura / 2, origin=(0, 0)), x_out, zc)
@@ -167,19 +199,25 @@ def peca(p: ParamsCaneca, com_reservatorio: bool = False) -> Manifold:
     cs = CrossSection([xy] + furos, FillRule.EvenOdd)
     lam = cs.extrude(p.alca_espessura_base - 2 * f).translate((0, 0, -(p.alca_espessura_base - 2 * f) / 2))
     lam = lam.rotate((90, 0, 0))                                   # plano xz, espessura em y
-    # mais grossa onde nasce do corpo, afinando para fora (sem contrassaída: as faces abrem para fora)
-    xo = R + p.alca_saliencia
+    # pode ser mais grossa onde nasce do corpo, afinando para fora (sem contrassaída)
+    xo = R + saliencia(p)
     hb = max(p.alca_espessura_base / 2 - f, 0.5)
     ho = max(p.alca_espessura / 2 - f, 0.5)
-    cunha = CrossSection([np.array([[R - 14, -hb], [xo + 1, -ho], [xo + 1, ho], [R - 14, hb]])])
+    cunha = CrossSection([np.array([[R - 32, -hb], [xo + 1, -ho], [xo + 1, ho], [R - 32, hb]])])
     cunha = cunha.extrude(H + 40).translate((0, 0, -10))
     lam = lam ^ cunha
     alca = lam.minkowski_sum(Manifold.sphere(f, 24)).trim_by_plane((0, 0, -1), -H)   # topo rente à borda
-    # o furo atravessa tudo (inclusive a casca do corpo que encosta nele)
+    # o furo atravessa a alça E afunda o corpo em volta dele, de lado a lado (a "concha"
+    # da foto). É reto na direção em que o molde abre, então não prende o gesso.
+    return (corpo + alca) - prisma_furo(p, R, furo)
+
+
+def prisma_furo(p: ParamsCaneca, R: float, furo: Polygon | None = None) -> Manifold:
+    if furo is None:
+        furo = forma_alca_2d(p, R)[1]
     fxy = np.asarray(furo.simplify(0.05).exterior.coords)[:-1]
-    prisma = CrossSection([fxy], FillRule.EvenOdd).extrude(2 * p.alca_espessura_base).translate(
-        (0, 0, -p.alca_espessura_base)).rotate((90, 0, 0))
-    return (corpo + alca) - prisma.trim_by_plane((1, 0, 0), R - 1.0)
+    L = R + 30
+    return CrossSection([fxy], FillRule.EvenOdd).extrude(2 * L).translate((0, 0, -L)).rotate((90, 0, 0))
 
 
 # --------------------------------------------------------------------------
@@ -188,8 +226,8 @@ def peca(p: ParamsCaneca, com_reservatorio: bool = False) -> Manifold:
 def dados(p: ParamsCaneca) -> dict:
     k = escala(p)
     R = raio_corpo(p)
-    c = p.alca_saliencia / 2 * k                                  # centraliza corpo+alça
-    meia = math.ceil((R + p.alca_saliencia / 2) * k + p.margem_gesso)
+    c = saliencia(p) / 2 * k                                  # centraliza corpo+alça
+    meia = math.ceil((R + saliencia(p) / 2) * k + p.margem_gesso)
     v1 = (p.altura + p.altura_reservatorio / k) * k
     return {"R": R, "k": k, "c": c, "meia": meia, "v0": -p.margem_gesso, "v1": v1, "esp": math.ceil(R * k + p.margem_gesso)}
 
@@ -314,8 +352,8 @@ def main() -> None:
         dx, dy, dz = tm.extents
         print(f"  {nome:24s} {dx:6.1f} x {dy:6.1f} x {dz:5.1f} mm")
     R, k = d["R"], d["k"]
-    print(f"  Peça queimada: altura {p.altura:.0f} mm, corpo Ø {2*R:.1f} mm, com a alça {2*R + p.alca_saliencia:.0f} mm,"
-          f" capacidade {volume_interno_ml(p, R):.0f} ml")
+    print(f"  Peça queimada: altura {p.altura:.0f} mm, corpo Ø {2*R:.1f} mm, com a alça {2*R + saliencia(p):.0f} mm,"
+          f" capacidade {capacidade_ml(p, R):.0f} ml")
     print(f"  Peça crua (no molde, +{p.aumento:.0f}%): altura {p.altura*k:.0f} mm, corpo Ø {2*R*k:.0f} mm")
     bloco = Manifold.cube((2 * d["meia"], d["v1"] - d["v0"], d["esp"])).translate((-d["meia"], d["v0"], 0))
     v = (bloco - peca_bandeja(p)).volume() / 1000.0
