@@ -9,6 +9,8 @@ Matrizes impressas em 3D para fazer moldes de gesso para cerâmica:
 | Pasta | `stl/copo/` | `stl/barbotina/` | `stl/prensagem/` |
 | Gerador | `gerar_copo.py` | `gerar_moldes.py` | `gerar_moldes.py` |
 
+> **Copinho barrigudo com covinha** (molde de 2 partes para barbotina, pasta `stl/copinho/`, gerador `gerar_copinho.py`): veja [GUIA_COPINHO.md](GUIA_COPINHO.md) · [PDF](GUIA_COPINHO.pdf).
+
 ## Marca da escola gravada no gesso
 
 ![Bloco de gesso com o logo gravado](imagens/gesso_logo.png)

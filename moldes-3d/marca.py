@@ -132,14 +132,12 @@ def _cross_section(g, traco_min: float) -> CrossSection:
     return CrossSection(aneis, FillRule.EvenOdd)
 
 
-def relevo_no_anel(raio: float, angulo_centro: float, z_centro: float, largura: float,
-                   profundidade: float = 1.2, virado: bool = True,
-                   arquivo: str | None = None) -> tuple[Manifold, float, str]:
-    """Relevo do logo para unir à parede INTERNA de um anel de raio `raio`.
-
-    angulo_centro em graus; z_centro = altura do centro do logo na peça do anel.
-    virado=True quando o molde é usado de cabeça para baixo em relação a como
-    foi feito (copo e prato de barbotina): o logo gira 180° para ficar de pé.
+def relevo_local(largura: float, profundidade: float = 1.2, virado: bool = False,
+                 arquivo: str | None = None) -> tuple[Manifold, float, str]:
+    """Logo em relevo em coordenadas locais, para qualquer parede:
+    x = para a direita (visto de FORA da parede), y = para cima,
+    z = 0 na ponta do relevo, crescendo para DENTRO da parede (até profundidade + 0,6).
+    O relevo é em degraus, com laterais inclinadas (~30°), para soltar do gesso.
     Devolve (sólido, altura do logo em mm, origem do logo)."""
     g, origem = carrega_logo(arquivo)
     altura = largura * proporcao(g)
@@ -149,17 +147,29 @@ def relevo_no_anel(raio: float, angulo_centro: float, z_centro: float, largura: 
     g = g.buffer(0.35, join_style=1).buffer(-0.35, join_style=1)   # traço mínimo para o gesso
     base = g.buffer(0.6, join_style=1).buffer(-0.6, join_style=1)   # suaviza cantos
     d = profundidade
-    # relevo em degraus com laterais inclinadas (~30°): o anel solta do gesso
-    # sem arrancar as bordas das letras, mesmo sendo puxado um pouco de lado
     passos = 4
     m = Manifold()
     for k in range(passos):
         alto = d * (k + 1) / passos                   # altura deste degrau (a partir da ponta)
         folga = 0.6 * k / (passos - 1)                # mais largo perto da parede
         cs = _cross_section(base.buffer(folga, join_style=1), traco_min=0)
-        espessura = d - alto + d / passos + 0.6       # vai da ponta do degrau até dentro da parede
+        espessura = d - alto + d / passos + 0.6
         m = m + cs.extrude(espessura).translate((0, 0, alto - d / passos))
+    return m, altura, origem
+
+
+def relevo_no_anel(raio: float, angulo_centro: float, z_centro: float, largura: float,
+                   profundidade: float = 1.2, virado: bool = True,
+                   arquivo: str | None = None) -> tuple[Manifold, float, str]:
+    """Relevo do logo para unir à parede INTERNA de um anel de raio `raio`.
+
+    angulo_centro em graus; z_centro = altura do centro do logo na peça do anel.
+    virado=True quando o molde é usado de cabeça para baixo em relação a como
+    foi feito (copo e prato de barbotina): o logo gira 180° para ficar de pé.
+    Devolve (sólido, altura do logo em mm, origem do logo)."""
+    m, altura, origem = relevo_local(largura, profundidade, virado, arquivo)
     m = m.refine_to_length(2.0)
+    d = profundidade
     a0 = math.radians(angulo_centro)
 
     def dobra(v: np.ndarray) -> np.ndarray:
