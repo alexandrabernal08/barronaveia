@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Molde de gesso de 2 PARTES para o COPINHO BARRIGUDO com covinha — Barro na Veia
-==============================================================================
+Molde de gesso de 2 PARTES para o COPINHO BARRIGUDO — Barro na Veia
+==================================================================
 
 Peça medida nas fotos com régua (+ vídeo girando a peça):
     altura 7,0 cm · boca Ø 6,3 cm · barriga Ø ~7,2 cm (a ~2,6 cm do apoio)
@@ -48,9 +48,10 @@ PERFIL_CM = [
 
 @dataclass
 class ParamsCopinho:
-    retracao: float = 0.0          # % — 0 = medidas da peça crua (como sai do molde)
-    # covinha (marca de dedo)
-    covinha: bool = True
+    aumento: float = 20.0          # % que o molde é maior que a peça medida (compensa a retração da barbotina)
+    retracao: float = 0.0          # alternativa: % de retração (usado só se aumento = 0)
+    # covinha (marca de dedo) — desligada: a covinha é feita à mão depois de desenformar
+    covinha: bool = False
     covinha_altura: float = 23.0   # mm do apoio até o centro da covinha
     covinha_largura: float = 30.0  # mm (diâmetro aproximado da marca)
     covinha_alta: float = 32.0     # mm (altura da marca)
@@ -79,13 +80,15 @@ class ParamsCopinho:
     saliencia_pino: float = 0.2
     # marca
     logo: bool = True
-    logo_largura: float = 38.0
+    logo_largura: float = 42.0
     logo_profundidade: float = 1.0
     logo_arquivo: str = ""
     segmentos: int = 256
 
 
 def escala(p: ParamsCopinho) -> float:
+    if p.aumento:
+        return 1.0 + p.aumento / 100.0
     return 1.0 / (1.0 - p.retracao / 100.0)
 
 
@@ -176,11 +179,16 @@ def chaves(p: ParamsCopinho) -> list[tuple[float, float]]:
 
 
 def altura_canal(p: ParamsCopinho, lado: str) -> tuple[float, float]:
-    """(v, w) do ponto onde o canal de ar sai na superfície da peça."""
+    """(v, w) do ponto onde o canal de ar sai na superfície da peça
+    (no centro da covinha, se houver; senão na parte mais larga da barriga)."""
     k = escala(p)
-    h0 = p.covinha_altura * k
-    w = raio_em(p, h0) - (p.covinha_fundura * k if (lado == "A" and p.covinha) else 0.0)
-    return h0, w
+    if p.covinha:
+        h0 = p.covinha_altura * k
+        w = raio_em(p, h0) - (p.covinha_fundura * k if lado == "A" else 0.0)
+        return h0, w
+    pf = perfil(p)[1:-3]
+    i = int(np.argmax(pf[:, 0]))
+    return float(pf[i, 1]), float(pf[i, 0])
 
 
 def bandeja(p: ParamsCopinho, lado: str) -> Manifold:
@@ -270,7 +278,10 @@ def main() -> None:
         print(f"  logo: {origem}")
     pecas["presilha"] = presilha(ParamsPrato(parede=p.parede, aba_presilha=p.aba_presilha))
     if p.canal_desmolde:
-        pecas["pino_A"], pecas["pino_B"] = pino(p, "A"), pino(p, "B")
+        if p.covinha:
+            pecas["pino_A"], pecas["pino_B"] = pino(p, "A"), pino(p, "B")
+        else:
+            pecas["pino"] = pino(p, "A")                  # igual para as duas bandejas (imprimir 2x)
     if a.peca:
         pecas["_peca_copinho"] = copinho(p, True, so_peca=True)
     print("[copinho]")
@@ -281,7 +292,8 @@ def main() -> None:
         dx, dy, dz = tm.extents
         print(f"  {nome:15s} {dx:6.1f} x {dy:6.1f} x {dz:5.1f} mm")
     k = escala(p)
-    print(f"  Copinho cru: altura {70*k:.0f} mm, boca Ø {63*k:.0f}, barriga Ø {2*d['rmax']:.0f}")
+    print(f"  Peça no molde (crua): altura {70*k:.0f} mm, boca Ø {63*k:.0f}, barriga Ø {2*d['rmax']:.0f}"
+          f"  (molde {k*100-100:+.0f}% em relação à peça medida)")
     bloco = Manifold.cube((2 * d["meia"], d["v1"] - d["v0"], d["esp"])).translate((-d["meia"], d["v0"], 0))
     v = (bloco - copinho(p, True)).volume() / 1000.0
     g, w = receita(v)
