@@ -15,7 +15,7 @@ Medidas da caneca da foto de referência: **8 cm de altura, 7,7 cm de largura co
 | Altura | **8,0 cm** | 9,6 cm |
 | Largura com a alça | **7,7 cm** | 9,2 cm |
 | Capacidade (até a borda) | **180 ml** | – |
-| Diâmetro do corpo | 6,9 cm | 8,2 cm |
+| Diâmetro do corpo | 7,0 cm | 8,3 cm |
 | Grossura da alça | 2,2 cm | 2,6 cm |
 | Furo em "D" | ~1,3 × 4,0 cm | ~1,6 × 4,8 cm |
 
@@ -28,6 +28,7 @@ O diâmetro do corpo foi calculado para dar 180 ml com 8 cm de altura, já conta
 - **Lábio:** uma borda arredondada da alça contorna o lado curvo do furo.
 - **Sulco em meia-lua:** em volta do lábio, o corpo afunda num sulco que vai de perto da borda até perto do fundo.
 - **Barriga interna:** a parede de dentro acompanha o sulco e avança para dentro no lado da alça.
+- **Peça única:** a alça, o lábio, o sulco e a barriga se ligam com curvas contínuas, sem degrau nem fresta entre eles. O sulco some suave antes da curva do fundo.
 
 ![Sua foto ao lado do modelo, no mesmo ângulo](imagens/caneca_comparacao.png)
 

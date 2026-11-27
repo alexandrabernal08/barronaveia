@@ -57,6 +57,7 @@ class ParamsCaneca:
     sulco_extra: float = 10.0      # quanto o sulco em meia-lua passa acima e abaixo do furo
     concha_fundura: float = 13.0   # quanto o furo entra no corpo
     concha_altura: float = 72.0    # o sulco vai de perto da borda até perto do fundo
+    maciez_interna: float = 7.0    # barriga interna bem lisa (sem degrau)
     concha_maciez: float = 3.0     # quanto mais, mais macia a borda do sulco
     arredonda: float = 3.5         # arredondado das quinas da alça
     # Molde
@@ -147,15 +148,20 @@ def x_concha(p: ParamsCaneca, R: float, z: np.ndarray, recuo: float = 0.0) -> np
     x_out, zc, a, b = furo_d(p, R)
     w = p.labio_furo
     u = np.clip(1 - ((z - zc) / (b + w + p.sulco_extra)) ** 2, 0, 1)
-    xs = x_out - (a + w) * np.sqrt(u) + 40 * (1 - u) ** 6       # contínuo: some suave nas pontas
+    # some suave antes da curva do fundo: alça e barriga viram uma peça só, sem vinco
+    t = np.clip((z - 4.0) / (p.raio_fundo + 4.0), 0, 1)
+    u = u * t * t * (3 - 2 * t)
+    # perfil sem degrau: perto do furo acompanha o "D"; nas pontas desce com inclinação suave
+    prof = 1 - (1 - u) ** 2.5
+    xs = x_out - (a + w) * prof + 40 * (1 - u) ** 6
     return xs - recuo
 
 
-def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0) -> Manifold:
+def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0, k: float | None = None) -> Manifold:
     """Empurra a parede do lado da alça para dentro até a concha, com transição suave
     (mínimo suave). Para cada altura, a parede só RECUA conforme se afasta do meio
     (y = 0), então o molde dividido nesse plano solta sem prender."""
-    k = p.concha_maciez
+    k = p.concha_maciez if k is None else k
     m = m.refine_to_length(1.5)
 
     def f(v: np.ndarray) -> np.ndarray:
@@ -203,14 +209,14 @@ def interno(p: ParamsCaneca, R: float, seg: int = 96) -> Manifold:
     t = p.parede_peca
     dentro = reg.buffer(-t, join_style=1).union(
         box(0, p.altura - 10, pts[-1][0] - t, p.altura + 5)).union(
-        box(-1, t + 2, 8, p.altura + 5))                           # vai até o eixo (sem "pino" no meio)
+        box(-1, t, 8, p.altura + 5))                           # vai até o eixo (sem "pino" no meio)
     dentro = dentro.intersection(box(0, 0, 1e3, p.altura))
     dentro = max(getattr(dentro, "geoms", [dentro]), key=lambda g: g.area)
     xy = np.asarray(dentro.exterior.coords)[:-1]
     xy[:, 0] = np.maximum(xy[:, 0], 0)
     if not dentro.exterior.is_ccw:
         xy = xy[::-1]
-    return amassa(p, Manifold.revolve(CrossSection([xy]), seg), R, recuo=t)
+    return amassa(p, Manifold.revolve(CrossSection([xy]), seg), R, recuo=t, k=p.maciez_interna)
 
 
 def capacidade_ml(p: ParamsCaneca, R: float, seg: int = 96) -> float:
@@ -289,18 +295,23 @@ def peca(p: ParamsCaneca, com_reservatorio: bool = False, oca: bool = False) -> 
     lam = lam - prisma_furo(p, R, furo.buffer(f, join_style=1))
     alca = lam.minkowski_sum(Manifold.sphere(f, 32)).trim_by_plane((0, 0, -1), -H)   # topo rente à borda
     alca = alca - prisma_furo(p, R, furo)                          # garante o furo aberto até a concha
-    # a alça não pode preencher o sulco: corta a parte de dentro dela pela linha do sulco
-    zz = np.linspace(0, H + 5, 240)
-    xs = x_concha(p, R, zz) - p.concha_maciez * math.log(2)   # acompanha a curva suave do corpo
-    dentro_sulco = xs < R + saliencia(p, R) - 1
-    if dentro_sulco.any():
-        zs_, xs_ = zz[dentro_sulco], xs[dentro_sulco]
-        poli = np.r_[np.c_[xs_, zs_], [[R - 45, zs_[-1]], [R - 45, zs_[0]]]]
-        if Polygon(poli).exterior.is_ccw is False:
-            poli = poli[::-1]
-        corte = CrossSection([poli]).extrude(2 * p.alca_espessura_base).translate(
-            (0, 0, -p.alca_espessura_base)).rotate((90, 0, 0))
-        alca = alca - corte
+    # a alça não pode preencher o sulco: corta a parte de dentro dela EXATAMENTE pela
+    # superfície do corpo (mesmo mínimo suave), 1 mm para dentro dele -> peça única, sem fresta
+    zz = np.linspace(-2, H + 5, 400)
+    rz = np.interp(np.clip(zz, 0, H), [q[1] for q in pts[1:-1]], [q[0] for q in pts[1:-1]])
+    rz = np.sqrt(np.maximum(rz ** 2 - (p.alca_espessura_base / 2 + 0.5) ** 2, 1.0))   # corpo na face da alça
+    xs = x_concha(p, R, zz)
+    k = p.concha_maciez
+    mn = np.minimum(rz, xs)
+    xb = mn - k * np.log(np.exp(-(rz - mn) / k) + np.exp(-(xs - mn) / k))   # superfície do corpo em y = 0
+    xcut = np.minimum(xb, rz) - 1.0
+    poli = np.r_[np.c_[xcut, zz], [[R - 45, zz[-1]], [R - 45, zz[0]]]]
+    if Polygon(poli).exterior.is_ccw is False:
+        poli = poli[::-1]
+    corte = CrossSection([poli]).extrude(2 * p.alca_espessura_base).translate(
+        (0, 0, -p.alca_espessura_base)).rotate((90, 0, 0))
+    alca = alca - corte
+    assert alca.volume() > 2000, "a alça sumiu: a largura total ficou pequena para esse corpo (aumente --largura-total)"
     m = corpo + alca
     if oca:
         m = m - interno(p, R, p.segmentos)
