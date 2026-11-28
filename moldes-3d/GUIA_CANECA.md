@@ -15,20 +15,20 @@ Medidas da caneca da foto de referência: **8 cm de altura, 7,7 cm de largura co
 | Altura | **8,0 cm** | 9,6 cm |
 | Largura com a alça | **7,7 cm** | 9,2 cm |
 | Capacidade (até a borda) | **180 ml** | – |
-| Diâmetro do corpo | 7,0 cm | 8,3 cm |
+| Diâmetro do corpo | 6,7 cm | 8,1 cm |
 | Grossura da alça | 2,2 cm | 2,6 cm |
-| Furo em "D" | ~1,3 × 4,0 cm | ~1,6 × 4,8 cm |
+| Furo (largura no meio × altura) | ~1,4 × 4,4 cm | ~1,6 × 5,3 cm |
 
 O diâmetro do corpo foi calculado para dar 180 ml com 8 cm de altura, já contando a barriga interna.
 
-### Como é a alça (igual às fotos)
+### Como é a alça
 
-- **Alça em bloco:** ela quase não sai do corpo, porque a largura total da caneca já a inclui. O topo fica rente à borda, e a barra de fora é arredondada.
-- **Furo em "D":** lado reto para fora e lado curvo redondo, entrando fundo no corpo.
-- **Lábio:** uma borda arredondada da alça contorna o lado curvo do furo.
-- **Sulco em meia-lua:** em volta do lábio, o corpo afunda num sulco que vai de perto da borda até perto do fundo.
-- **Barriga interna:** a parede de dentro acompanha o sulco e avança para dentro no lado da alça.
-- **Peça única:** a alça, o lábio, o sulco e a barriga se ligam com curvas contínuas, sem degrau nem fresta entre eles. O sulco some suave antes da curva do fundo.
+- **Barriga invertida:** no lado da alça, a parede da caneca faz **uma curva só, contínua**, para dentro, da borda até perto do fundo. Não tem degrau, nem por fora nem por dentro.
+- **Furo:** fica entre a barra de fora e essa curva. O lado de dentro do furo é a própria parede da caneca, e os cantos são arredondados.
+- **Alça em bloco:** o topo fica rente à borda, a barra de fora é arredondada e a alça quase não sai do corpo (a largura total já a inclui).
+- **Peça única:** alça e barriga se ligam sem frestas. A parede de dentro acompanha a curva de fora.
+
+![Perfil: a barriga invertida contínua](imagens/caneca_perfil.png)
 
 ![Sua foto ao lado do modelo, no mesmo ângulo](imagens/caneca_comparacao.png)
 
@@ -42,7 +42,7 @@ O diâmetro do corpo foi calculado para dar 180 ml com 8 cm de altura, já conta
 - **Encaixe:** as metades encaixam por 4 chaves de registro.
 - **Marca:** cada metade sai com o **logo Barro na Veia** gravado na lateral.
 
-Montado, o molde forma um bloco de **13,4 × 14,4 × 14,1 cm**.
+Montado, o molde forma um bloco de **13,2 × 14,4 × 14,1 cm**.
 
 ## Peças (pasta `stl/caneca/`)
 
@@ -106,7 +106,7 @@ Faça uma metade de cada vez: primeiro com a `bandeja_A`, depois com a `bandeja_
 python3 gerar_caneca.py --altura 100 --largura-total 98 --capacidade 300   # caneca maior
 python3 gerar_caneca.py --alca-espessura 18 --alca-espessura-base 18   # alça mais fina (enche mais fácil)
 python3 gerar_caneca.py --furo-altura 46                                # furo mais alto
-python3 gerar_caneca.py --labio-furo 5 --sulco-extra 12 --concha-maciez 4   # lábio e sulco
+python3 gerar_caneca.py --concha-fundura 14 --furo-altura 48   # barriga mais funda, furo mais alto
 python3 gerar_caneca.py --aumento 15                                   # outra retração
 python3 gerar_caneca.py --help
 ```

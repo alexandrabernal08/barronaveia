@@ -49,14 +49,14 @@ class ParamsCaneca:
     alca_barra: float = 8.0        # barra de fora (onde se segura), arredondada
     alca_base: float = 0.05        # a alça desce até perto do fundo, acompanhando o "U"
     alca_topo_folga: float = 0.0   # 0 = topo da alça rente à borda (topo reto, como na foto)
-    furo_altura: float = 40.0      # furo em "D", lado reto para fora
-    furo_centro: float = 0.52      # altura do centro do furo (fração da altura)
-    rampa_fundura: float = 3.0     # arredonda o "lábio" em volta do furo (vista de frente)
+    furo_altura: float = 44.0      # altura do furo (vão entre a barra e a barriga invertida)
+    furo_centro: float = 0.55      # altura do centro do furo (fração da altura)
+    furo_canto: float = 6.0        # raio das curvas onde o furo encontra a alça (sem quina)
+    rampa_fundura: float = 0.0     # (desligado) rampa nas faces da alça
     rampa_largura: float = 8.0
-    labio_furo: float = 4.0        # borda de alça que contorna o lado curvo do furo
-    sulco_extra: float = 10.0      # quanto o sulco em meia-lua passa acima e abaixo do furo
-    concha_fundura: float = 13.0   # quanto o furo entra no corpo
-    concha_altura: float = 72.0    # o sulco vai de perto da borda até perto do fundo
+    concha_fundura: float = 12.0   # quanto a barriga invertida entra no meio (cintura)
+    concha_inicio: float = 0.08    # onde a curva começa embaixo (fração da altura)
+    concha_fim: float = 1.04       # onde ela termina em cima (passa um pouco da borda)
     maciez_interna: float = 7.0    # barriga interna bem lisa (sem degrau)
     concha_maciez: float = 3.0     # quanto mais, mais macia a borda do sulco
     arredonda: float = 3.5         # arredondado das quinas da alça
@@ -126,12 +126,19 @@ def saliencia(p: ParamsCaneca, R: float | None = None) -> float:
     return p.largura_total - 2 * (raio_corpo(p) if R is None else R)
 
 
+def furo_d(p: ParamsCaneca, R: float) -> tuple[float, float, float, float]:
+    """(x da face de dentro da barra, z do centro, largura no meio, meia altura)."""
+    x_bin = R + saliencia(p, R) - p.alca_barra
+    zc = p.furo_centro * p.altura
+    return x_bin, zc, x_bin - float(x_concha(p, R, np.array([zc]))[0]), p.furo_altura / 2
+
+
 def furo_largura(p: ParamsCaneca, R: float | None = None) -> float:
     """Largura visível do furo: do fundo da concha até a barra de fora."""
     return saliencia(p, R) - p.alca_barra + p.concha_fundura
 
 
-def furo_d(p: ParamsCaneca, R: float) -> tuple[float, float, float, float]:
+def furo_d_antigo(p: ParamsCaneca, R: float) -> tuple[float, float, float, float]:
     """Furo em "D": (x do lado reto, z do centro, meia largura a, meia altura b).
     O lado curvo é meia elipse; a ponta encosta no fundo da concha."""
     a = furo_largura(p, R)
@@ -141,20 +148,12 @@ def furo_d(p: ParamsCaneca, R: float) -> tuple[float, float, float, float]:
 
 # ---- concha: o corpo afunda em volta do furo (curva e macia, como na foto) ----
 def x_concha(p: ParamsCaneca, R: float, z: np.ndarray, recuo: float = 0.0) -> np.ndarray:
-    """Até onde a parede vai, na direção da alça, em cada altura (a 'concha').
-    Fora da concha devolve um valor alto (não corta nada)."""
-    # o sulco acompanha o lado curvo do furo por fora, deixando um "lábio" de alça em volta
-    # do furo, e continua acima e abaixo dele (meia-lua grande, como nas fotos)
-    x_out, zc, a, b = furo_d(p, R)
-    w = p.labio_furo
-    u = np.clip(1 - ((z - zc) / (b + w + p.sulco_extra)) ** 2, 0, 1)
-    # some suave antes da curva do fundo: alça e barriga viram uma peça só, sem vinco
-    t = np.clip((z - 4.0) / (p.raio_fundo + 4.0), 0, 1)
-    u = u * t * t * (3 - 2 * t)
-    # perfil sem degrau: perto do furo acompanha o "D"; nas pontas desce com inclinação suave
-    prof = 1 - (1 - u) ** 2.5
-    xs = x_out - (a + w) * prof + 40 * (1 - u) ** 6
-    return xs - recuo
+    """Barriga invertida: UMA curva contínua, da borda até perto do fundo, sem degrau.
+    Profundidade (1 - s²)² -> tangente suave nas duas pontas (entra e sai sem quina)."""
+    z0, z1 = p.concha_inicio * p.altura, p.concha_fim * p.altura
+    s_ = np.clip((2 * z - z0 - z1) / (z1 - z0), -1, 1)
+    prof = (1 - s_ ** 2) ** 2
+    return R - recuo - p.concha_fundura * prof + 30 * (1 - prof) ** 8
 
 
 def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0, k: float | None = None) -> Manifold:
@@ -239,22 +238,22 @@ def raio_corpo(p: ParamsCaneca) -> float:
 
 
 def forma_alca_2d(p: ParamsCaneca, R: float):
-    """Contorno da alça visto de lado (plano xz) e o furo. O furo vai fundo: o lado
-    curvo dele é a própria concha do corpo (como na foto)."""
+    """Alça vista de lado (plano xz) e o furo. O furo fica entre a barra de fora e a
+    própria barriga invertida do corpo: o lado de dentro do furo É a parede da caneca."""
     H = p.altura
-    z0, z1 = p.alca_base * H, H - p.alca_topo_folga
-    x_out, _, a_furo, _ = furo_d(p, R)                         # lado reto do furo (de fora)
-    xo = x_out + p.alca_barra
-    z1 = z1 + p.arredonda + 2                                  # passa da borda; é aparado depois
-    bloco = box(R - 30, z0, xo, z1)                             # a parte de dentro some no corpo
+    z0 = p.alca_base * H
+    xo = R + saliencia(p, R)
+    x_bin = xo - p.alca_barra
+    z1 = H + p.arredonda + 2                                   # passa da borda; é aparado depois
+    bloco = box(R - 30, z0, xo, z1)
     r = 18.0
     bloco = bloco.buffer(-r, join_style=1).buffer(r, join_style=1).union(box(R - 30, z0 + r, R - 12, z1 - r))
-    zc = p.furo_centro * H
-    from shapely.affinity import scale, translate
-    elipse = translate(scale(Point(0, 0).buffer(1, resolution=128), a_furo + 1.0, p.furo_altura / 2,
-                             origin=(0, 0)), x_out, zc)
-    furo = elipse.intersection(box(R - 40, zc - p.furo_altura, x_out, zc + p.furo_altura))
-    furo = furo.buffer(-3, join_style=1).buffer(3, join_style=1)
+    zc, hb = p.furo_centro * H, p.furo_altura / 2
+    zz = np.linspace(zc - hb, zc + hb, 160)
+    xin = x_concha(p, R, zz) - 6.0                              # entra no corpo (só corta a alça)
+    furo = Polygon(np.r_[np.c_[np.full_like(zz, x_bin), zz][::-1], np.c_[xin, zz]])
+    c = p.furo_canto
+    furo = furo.buffer(-c, join_style=1).buffer(c, join_style=1)
     from shapely.geometry.polygon import orient
     return orient(bloco, 1.0), orient(furo, 1.0)
 
@@ -311,11 +310,12 @@ def peca(p: ParamsCaneca, com_reservatorio: bool = False, oca: bool = False) -> 
     corte = CrossSection([poli]).extrude(2 * p.alca_espessura_base).translate(
         (0, 0, -p.alca_espessura_base)).rotate((90, 0, 0))
     alca = alca - corte
+    assert furo_d(p, R)[2] > 10, "furo estreito demais para o dedo (aumente --largura-total ou --concha-fundura)"
     assert alca.volume() > 2000, "a alça sumiu: a largura total ficou pequena para esse corpo (aumente --largura-total)"
     m = corpo + alca
     if oca:
         m = m - interno(p, R, p.segmentos)
-    return escareia(p, m, R)
+    return escareia(p, m, R) if p.rampa_fundura > 0 else m
 
 
 # --------------------------------------------------------------------------
