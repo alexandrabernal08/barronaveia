@@ -41,22 +41,22 @@ class ParamsCaneca:
     largura_total: float = 77.0    # mm, corpo + alça (medida da foto)
     capacidade: float = 180.0      # ml até a borda (medida da foto)
     parede_peca: float = 4.0       # parede da peça queimada (só para calcular a capacidade)
-    afina_boca: float = 1.0        # raio da boca / raio do corpo
+    afina_boca: float = 1.07       # boca um pouco mais larga que o corpo (como a caneca branca)
     raio_fundo: float = 18.0       # arredondado do fundo (formato de "U")
     # Alça em bloco (peça queimada). Ela quase não sai do corpo: a largura total já a inclui.
-    alca_espessura: float = 15.0   # grossura da alça (mais estreita, como nas fotos)
-    alca_espessura_base: float = 15.0  # (mesmo valor: a alça nasce do próprio corpo)
-    alca_concordancia: float = 7.0 # raio da curva que une a alça ao corpo (vista de cima)
+    alca_espessura: float = 7.5    # grossura da alça (mais estreita, como nas fotos)
+    alca_espessura_base: float = 7.5   # (mesmo valor: a alça nasce do próprio corpo)
+    alca_concordancia: float = 4.0 # raio da curva que une a alça ao corpo (vista de cima)
     alca_barra: float = 8.0        # barra de fora (onde se segura), arredondada
     alca_base: float = 0.05        # a alça desce até perto do fundo, acompanhando o "U"
     alca_topo_folga: float = 0.0   # 0 = topo da alça rente à borda (topo reto, como na foto)
-    furo_altura: float = 38.0      # altura do furo em "D"
-    furo_centro: float = 0.54      # altura do centro do furo (fração da altura)
-    furo_largura_mm: float = 18.0  # largura do furo no meio (do fundo da curva até a barra)
+    furo_altura: float = 63.0      # vão alto, quase da borda ao pé (como a caneca branca)
+    furo_centro: float = 0.52      # altura do centro do furo (fração da altura)
+    furo_largura_mm: float = 19.0  # largura do furo no meio (do fundo da curva até a barra)
     furo_canto: float = 6.0        # raio das curvas onde o furo encontra a alça (sem quina)
     rampa_fundura: float = 0.0     # (desligado)
     rampa_largura: float = 5.0
-    meia_lua_abre: float = 6.0     # quanto o túnel do furo abre ao sair na lateral (meia-lua arredondada)
+    meia_lua_abre: float = 5.0     # quanto o túnel do furo abre ao sair na lateral (meia-lua arredondada)
     concha_fundura: float = 12.0   # quanto a barriga invertida entra no meio (cintura)
     concha_inicio: float = 0.08    # onde a curva começa embaixo (fração da altura)
     concha_fim: float = 1.04       # onde ela termina em cima (passa um pouco da borda)
@@ -99,9 +99,9 @@ def contorno_corpo(p: ParamsCaneca, R: float, n: int = 40) -> list[tuple[float, 
     pts = [(0.0, 0.0), (R - rc, 0.0)]
     for t in np.linspace(-math.pi / 2, 0, n)[1:]:
         pts.append((R - rc + rc * math.cos(t), rc + rc * math.sin(t)))
-    pts += [(R, 0.5 * H)]
+    # parede reta, abrindo de leve até a boca (cônica, como a caneca de referência)
     for u in np.linspace(0, 1, n)[1:]:
-        pts.append((R * (1 - (1 - p.afina_boca) * u * u), 0.5 * H + 0.5 * H * u))
+        pts.append((R * (1 + (p.afina_boca - 1) * u), rc + (H - rc) * u))
     return pts
 
 
@@ -150,15 +150,17 @@ def furo_d_antigo(p: ParamsCaneca, R: float) -> tuple[float, float, float, float
 
 
 # ---- concha: o corpo afunda em volta do furo (curva e macia, como na foto) ----
-def x_concha(p: ParamsCaneca, R: float, z: np.ndarray, recuo: float = 0.0) -> np.ndarray:
+def x_concha(p: ParamsCaneca, R: float, z: np.ndarray, recuo: float = 0.0, extra: float = 0.0) -> np.ndarray:
     """Lado curvo do furo em "D" (até onde a parede vai, na direção da alça).
     Fora da altura do furo devolve um valor alto (não mexe na parede)."""
     x_bin, zc, a, b = furo_d(p, R)
+    a, b = a + extra, b + extra
     u = np.clip(1 - ((z - zc) / b) ** 2, 0, 1)
     return x_bin - a * np.sqrt(u) + 40 * (u <= 0) - recuo
 
 
-def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0, k: float | None = None) -> Manifold:
+def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0, k: float | None = None,
+           extra: float = 0.0) -> Manifold:
     """Empurra a parede do lado da alça para dentro até a concha, com transição suave
     (mínimo suave). Para cada altura, a parede só RECUA conforme se afasta do meio
     (y = 0), então o molde dividido nesse plano solta sem prender."""
@@ -167,7 +169,7 @@ def amassa(p: ParamsCaneca, m: Manifold, R: float, recuo: float = 0.0, k: float 
 
     def f(v: np.ndarray) -> np.ndarray:
         x, y, z = v[:, 0], v[:, 1], v[:, 2]
-        xs = x_concha(p, R, z, recuo)
+        xs = x_concha(p, R, z, recuo, extra)
         a, b = x / k, xs / k
         mn = np.minimum(a, b)
         smin = k * (mn - np.log(np.exp(-(a - mn)) + np.exp(-(b - mn))))
@@ -204,20 +206,22 @@ def revolve_contorno(p: ParamsCaneca, pts: list, seg: int) -> Manifold:
 
 
 def interno(p: ParamsCaneca, R: float, seg: int = 96) -> Manifold:
-    """Espaço interno da caneca pronta (a parede acompanha a concha: 'barriga interna')."""
+    """Espaço interno: a parede de dentro copia a de fora recuada a espessura da parede
+    (como na barbotina): o rebaixo do furo aparece por dentro como barriga, suave."""
     pts = contorno_corpo(p, R)
     reg = Polygon(pts + [(0, p.altura)]).buffer(0)
     t = p.parede_peca
     dentro = reg.buffer(-t, join_style=1).union(
-        box(0, p.altura - 10, pts[-1][0] - t, p.altura + 5)).union(
-        box(-1, t, 8, p.altura + 5))                           # vai até o eixo (sem "pino" no meio)
+        box(0, p.altura - 10, pts[-1][0] - t, p.altura + 5)).union(box(-1, t, 8, p.altura + 5))
     dentro = dentro.intersection(box(0, 0, 1e3, p.altura))
     dentro = max(getattr(dentro, "geoms", [dentro]), key=lambda g: g.area)
     xy = np.asarray(dentro.exterior.coords)[:-1]
     xy[:, 0] = np.maximum(xy[:, 0], 0)
     if not dentro.exterior.is_ccw:
         xy = xy[::-1]
-    return amassa(p, Manifold.revolve(CrossSection([xy]), seg), R, recuo=t, k=p.maciez_interna)
+    base = Manifold.revolve(CrossSection([xy]), seg)
+    tunel = funil_furo(p, R, furo_poly(p, R).buffer(t, join_style=1, resolution=24), extra_y=t)
+    return base - tunel
 
 
 def capacidade_ml(p: ParamsCaneca, R: float, seg: int = 96) -> float:
@@ -260,14 +264,14 @@ def forma_alca_2d(p: ParamsCaneca, R: float):
     return orient(bloco, 1.0), orient(furo, 1.0)
 
 
-def funil_furo(p: ParamsCaneca, R: float, furo: Polygon) -> Manifold:
+def funil_furo(p: ParamsCaneca, R: float, furo: Polygon, extra_y: float = 0.0) -> Manifold:
     """Túnel em "D" atravessando de lado a lado. Na grossura da alça ele é exato; daí para
     fora vai ABRINDO suave (como um escareado), até sair na lateral do corpo. O encontro
     do túnel com a lateral redonda forma a meia-lua das fotos, com a borda arredondada."""
     import trimesh
     from manifold3d import Mesh
     x_bin, zc, a, b = furo_d(p, R)
-    W = p.alca_espessura / 2
+    W = p.alca_espessura / 2 + extra_y
     cx, cz = x_bin - a * 0.45, zc
     N = 256
     th = np.linspace(-np.pi, np.pi, N, endpoint=False)
@@ -313,32 +317,42 @@ def prisma_furo(p: ParamsCaneca, R: float, furo: Polygon | None = None, comprime
     return CrossSection([fxy], FillRule.EvenOdd).extrude(2 * L).translate((0, 0, -L)).rotate((90, 0, 0))
 
 
-def planta(p: ParamsCaneca, R: float) -> Polygon:
-    """Vista de cima: o círculo do corpo e a alça saindo dele, unidos por uma curva
-    (concordância). A alça é o próprio corpo esticado, não um bloco grudado."""
+def planta(p: ParamsCaneca, R: float, r: float | None = None) -> Polygon:
+    """Vista de cima numa altura em que o corpo tem raio r: o círculo do corpo e a alça
+    saindo dele, unidos por uma curva. A alça acompanha o corpo (recua junto no fundo),
+    mas não some: ela vai até o pé, como na caneca de referência."""
+    r = R if r is None else r
     W = p.alca_espessura / 2
-    xo = R + saliencia(p, R)
-    lobo = box(R - 15, -W, xo - W, W).union(Point(xo - W, 0).buffer(W, resolution=48))
-    base = Point(0, 0).buffer(R, resolution=180).union(lobo)
+    xo = r + saliencia(p, R)
+    lobo = box(r - 15, -W, xo - W, W).union(Point(xo - W, 0).buffer(W, resolution=48))
+    base = Point(0, 0).buffer(r, resolution=180).union(lobo)
     f = p.alca_concordancia
     return base.buffer(f, join_style=1, resolution=32).buffer(-f, join_style=1, resolution=32)
 
 
 def casca_externa(p: ParamsCaneca, R: float) -> Manifold:
-    """Sólido de fora: em cada altura, a planta encolhida junto com o fundo em "U".
-    Assim a alça acompanha o fundo arredondado e a borda reta, como uma peça só."""
+    """Sólido de fora: em cada altura, a planta com o raio do corpo naquela altura.
+    A alça é o próprio corpo esticado para o lado, da borda até o pé."""
     pts = contorno_corpo(p, R)
     zs_c = np.array([q[1] for q in pts[1:]])
     rs_c = np.array([q[0] for q in pts[1:]])
-    base = planta(p, R)
-    th = np.linspace(-np.pi, np.pi, 360, endpoint=False)
-    zs = np.r_[np.linspace(0, p.raio_fundo + 2, 30), np.linspace(p.raio_fundo + 3, p.altura, 30)]
+    th = np.linspace(-np.pi, np.pi, 900, endpoint=False)
+    zs = np.r_[np.linspace(0, p.raio_fundo + 2, 60), np.linspace(p.raio_fundo + 3, p.altura, 40)]
     raios = []
     for z in zs:
-        enc = R - float(np.interp(z, zs_c, rs_c))
-        g = base.buffer(-enc, join_style=1, resolution=24) if enc > 1e-3 else base
-        raios.append(raio_polar(g, th))
+        r = float(np.interp(z, zs_c, rs_c))
+        raios.append(raio_polar(planta(p, R, r).segmentize(0.3), th))
     return loft(list(zs), raios, th)
+
+
+def furo_poly(p: ParamsCaneca, R: float) -> Polygon:
+    """Furo em "D" visto de lado (plano xz), com os cantos arredondados."""
+    x_bin, zc, a, b = furo_d(p, R)
+    zz = np.linspace(zc - b, zc + b, 200)
+    xd = x_bin - a * np.sqrt(np.clip(1 - ((zz - zc) / b) ** 2, 0, 1))       # lado curvo do "D"
+    furo = Polygon(np.r_[np.c_[xd, zz], [[x_bin, zc + b], [x_bin, zc - b]]]).buffer(0)
+    c = 4.0
+    return furo.buffer(-c, join_style=1).buffer(c, join_style=1)
 
 
 def peca(p: ParamsCaneca, com_reservatorio: bool = False, oca: bool = False) -> Manifold:
@@ -355,13 +369,7 @@ def peca(p: ParamsCaneca, com_reservatorio: bool = False, oca: bool = False) -> 
         m = m + revolve_contorno(p, res, p.segmentos)
     # furo em "D" atravessando de lado a lado: abre o furo na alça e, nas laterais do corpo,
     # forma a meia-lua rebaixada em volta do lado curvo (como nas fotos)
-    x_bin, zc, a, b = furo_d(p, R)
-    zz = np.linspace(zc - b, zc + b, 200)
-    xd = x_bin - a * np.sqrt(np.clip(1 - ((zz - zc) / b) ** 2, 0, 1))       # lado curvo do "D"
-    furo = Polygon(np.r_[np.c_[xd, zz], [[x_bin, zc + b], [x_bin, zc - b]]]).buffer(0)
-    c = 4.0
-    furo = furo.buffer(-c, join_style=1).buffer(c, join_style=1)
-    m = m - funil_furo(p, R, furo)
+    m = m - funil_furo(p, R, furo_poly(p, R))
     assert m.volume() > 0
     if oca:
         m = m - interno(p, R, p.segmentos)

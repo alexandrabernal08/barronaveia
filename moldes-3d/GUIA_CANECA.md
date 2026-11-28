@@ -15,23 +15,25 @@ Medidas da caneca da foto de referência: **8 cm de altura, 7,7 cm de largura co
 | Altura | **8,0 cm** | 9,6 cm |
 | Largura com a alça | **7,7 cm** | 9,2 cm |
 | Capacidade (até a borda) | **180 ml** | – |
-| Diâmetro do corpo | 6,7 cm | 8,0 cm |
-| Grossura da alça | 1,5 cm | 1,8 cm |
-| Furo em "D" (largura × altura) | 1,8 × 3,8 cm | 2,2 × 4,6 cm |
+| Diâmetro do corpo (embaixo / na boca) | 6,8 / 7,2 cm | 8,1 / 8,7 cm |
+| Grossura da alça | 7,5 mm | 9 mm |
+| Vão dos dedos (fundura × altura) | 1,9 × 6,3 cm | 2,3 × 7,6 cm |
 
 O diâmetro do corpo foi calculado para dar 180 ml com 8 cm de altura, já contando a barriga interna.
 
 ### Como é a alça
 
-- **Uma peça só:** a alça **nasce do próprio corpo**. Visto de cima, ela é o corpo esticado para o lado, unido por uma curva. O contorno da alça acompanha a caneca: o topo fica rente à borda e a parte de baixo segue o fundo em "U".
-- **Alça estreita:** tem 1,5 cm de grossura, e a barra de fora (onde se segura) tem 8 mm, arredondada.
-- **Furo em "D":** lado reto junto da barra e lado curvo entrando no corpo. Tem 1,8 cm de largura e 3,8 cm de altura na peça pronta.
-- **Meia-lua:** o furo atravessa de lado a lado e vai abrindo suave ao sair nas laterais do corpo. O encontro com a parede redonda forma a meia-lua rebaixada das fotos.
-- **Por dentro:** a parede acompanha, com no mínimo 4 mm de espessura em toda a peça.
+- **Referência:** a caneca branca da foto. O corpo é levemente cônico, mais largo em cima.
+- **Uma peça só:** a alça **nasce do próprio corpo** e vai da borda até o pé, acompanhando o fundo.
+- **Alça fina:** tem 7,5 mm de grossura, e a barra de fora (onde se segura) tem 8 mm.
+- **Barriga invertida:** no lado da alça, o corpo afunda numa curva em "C" contínua, sem degrau.
+- **Vão para os dedos:** fica entre a barra e essa curva e vai quase da borda até o pé. Tem 1,9 cm de fundura e 6,3 cm de altura na peça pronta.
+- **Laterais:** o vão atravessa de lado a lado e abre suave ao sair, formando a meia-lua.
+- **Por dentro:** a parede copia a de fora, com uns 4 mm de espessura (mínimo de 3,6 mm).
 
 ![A caneca vista de vários ângulos](imagens/caneca_angulos.png)
 
-![Sua foto ao lado do modelo, no mesmo ângulo](imagens/caneca_comparacao.png)
+![A caneca branca de referência ao lado do modelo](imagens/caneca_comparacao.png)
 
 ![Caneca cortada ao meio: a barriga interna no lado da alça](imagens/caneca_dentro.png)
 
@@ -107,8 +109,8 @@ Faça uma metade de cada vez: primeiro com a `bandeja_A`, depois com a `bandeja_
 python3 gerar_caneca.py --altura 100 --largura-total 98 --capacidade 300   # caneca maior
 python3 gerar_caneca.py --alca-espessura 18 --alca-espessura-base 18   # alça mais fina (enche mais fácil)
 python3 gerar_caneca.py --furo-altura 46                                # furo mais alto
-python3 gerar_caneca.py --furo-altura 42 --furo-largura-mm 20      # furo maior
-python3 gerar_caneca.py --alca-espessura 17 --meia-lua-abre 8      # alça mais grossa, meia-lua mais aberta
+python3 gerar_caneca.py --furo-altura 60 --furo-largura-mm 21      # vão mais baixo e mais fundo
+python3 gerar_caneca.py --alca-espessura 10 --afina-boca 1.1      # alça mais grossa, boca mais aberta
 python3 gerar_caneca.py --aumento 15                                   # outra retração
 python3 gerar_caneca.py --help
 ```
